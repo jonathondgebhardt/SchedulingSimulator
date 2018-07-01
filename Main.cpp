@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <array>
+#include <stdlib.h>
 
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
 
@@ -11,19 +12,42 @@ std::vector<std::array<int, 3>> readInputFile(const std::string&);
 
 int main(int argc, char **argv)
 {
-	std::vector<std::array<int, 3>> fileContents = readInputFile("test/03.txt");
-
-	std::cout << "result from reading:\n";
-
-	for(const auto a : fileContents)
+	// Check for correct number of arguments.
+	if(argc != 3)
 	{
-		for(const auto b : a)
-		{
-			std::cout << b << "\t";
-		}
-
-		std::cout << "\n";
+		std::cerr << "Requires two arguments: ./simulator [INPUT FILENAME] [SCHEDULER TYPE]\n";
+		exit(1);
 	}
+
+	// Get arguments.
+	std::string fileName = argv[1];	
+	std::string schedulerType = argv[2];
+
+	// Check for correct scheduler type.
+	if(schedulerType != "FCFS" && schedulerType != "RR" && schedulerType != "MLFQ")
+	{
+		std::cerr << "Incorrect scheduler type: ./simulator [INPUT FILENAME] [FCFS|RR|MLFQ]\n";
+		exit(1);
+	}
+
+	// Read file contents and store in vector.
+	std::vector<std::array<int, 3>> fileContents = readInputFile(fileName);
+
+	// Check for valid file contents.
+	if(fileContents.size() == 0)
+	{
+		std::cerr << "Error reading file\n";
+		exit(1);
+	}
+
+	// for(const auto a : fileContents)
+	// {
+	// 	for(const auto b : a)
+	// 	{
+	// 		std::cout << b << "\t";
+	// 	}
+	// 	std::cout << "\n";
+	// }
 
 	return 0;
 }
@@ -34,61 +58,46 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 	std::ifstream file;
 	file.open(fileName);
 	
-	if (file.is_open())
+	try
 	{
-		std::string line;
-		
-		int index = 0;
-
-		//while(getline(file, line, '\t'))
-		while(getline(file, line))
+		// Attempt to open file
+		if (file.is_open())
 		{
-			// string line = "GeeksForGeeks is a must try";
-     
-			// // Vector of string to save tokens
-			// vector <string> tokens;
+			std::string line;
+			int index = 0;
 			
-			// // stringstream class check1
-			// stringstream check1(line);
-			
-			// string intermediate;
-			
-			// // Tokenizing w.r.t. space ' '
-			// while(getline(check1, intermediate, ' '))
-			// {
-			//     tokens.push_back(intermediate);
-			// }
-			
-			// // Printing the token vector
-			// for(int i = 0; i < tokens.size(); i++)
-			//     cout << tokens[i] << '\n';
-
-			std::array<int, 3> arr;
-			std::stringstream ss(line);
-			std::string intermediate;
-			int x;
-
-			while(getline(ss, intermediate, '\t'))
+			// Get line from file
+			while(getline(file, line))
 			{
-				x = std::stoi(intermediate);
-				std::cout << x << "\t";
+				// Tokenizing a string:
+				// https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
 
-				arr[index] = x;
-				index = (index+1) % 3;
+				std::array<int, 3> arr;
+				std::stringstream ss(line);
+				std::string intermediate;
+				int x;
+
+				// Tokenize line and store in array
+				while(getline(ss, intermediate, '\t'))
+				{
+					x = std::stoi(intermediate);
+					arr[index] = x;
+					index = (index+1) % 3;
+				}
+				
+				// Put line contents in vector
+				contents.push_back(arr);
 			}
-			
-			contents.push_back(arr);
-			std::cout << "\n";
-
 		}
-
-		file.close();
+		
 	}
-
-	else
+	// Handle non-number input
+	catch(std::invalid_argument e)
 	{
-		std::cout << "Could not open file " << fileName << "\n";
+		std::cerr << "Error parsing file\n";
 	}
+
+	file.close();
 
 	return contents;
 }
