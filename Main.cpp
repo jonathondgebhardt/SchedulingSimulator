@@ -1,4 +1,13 @@
+//
+// CEG4350 - Project 1: CPU Scheduling Simulator
+// Summer 2018
+// Instructor: Dr. Yong Pei
+// Authors: Jonathon Gebhardt, Brittany Sommers-Woods
+//
+
 #include "Process.h"
+#include "FCFS.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,6 +16,7 @@
 #include <stdlib.h>
 
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
+std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>&);
 
 // Expected args: input filename, type of scheduler
 
@@ -16,7 +26,7 @@ int main(int argc, char **argv)
 	if(argc != 3)
 	{
 		std::cerr << "Requires two arguments: ./simulator [INPUT FILENAME] [SCHEDULER TYPE]\n";
-		exit(1);
+		return 1;
 	}
 
 	// Get arguments.
@@ -27,7 +37,7 @@ int main(int argc, char **argv)
 	if(schedulerType != "FCFS" && schedulerType != "RR" && schedulerType != "MLFQ")
 	{
 		std::cerr << "Incorrect scheduler type: ./simulator [INPUT FILENAME] [FCFS|RR|MLFQ]\n";
-		exit(1);
+		return 1;
 	}
 
 	// Read file contents and store in vector.
@@ -37,17 +47,16 @@ int main(int argc, char **argv)
 	if(fileContents.size() == 0)
 	{
 		std::cerr << "Error reading file\n";
-		exit(1);
+		return 1;
 	}
 
-	// for(const auto a : fileContents)
-	// {
-	// 	for(const auto b : a)
-	// 	{
-	// 		std::cout << b << "\t";
-	// 	}
-	// 	std::cout << "\n";
-	// }
+	std::vector<Process> processes = getProcesses(fileContents);
+
+	for(Process a : processes)
+	{
+		// a.toString();
+		std::cout << a << "\n";
+	}
 
 	return 0;
 }
@@ -100,4 +109,21 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 	file.close();
 
 	return contents;
+}
+
+std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>& rawProcesses)
+{
+	std::vector<Process> processes;
+
+	for(const auto a : rawProcesses)
+	{
+		int pid = a[0];
+		int arrival_time = a[1];
+		int burst_time = a[2];
+
+		Process p(pid, arrival_time, burst_time);
+		processes.push_back(p);
+	}
+
+	return processes;
 }

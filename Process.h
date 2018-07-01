@@ -5,15 +5,29 @@
 // Authors: Jonathon Gebhardt, Brittany Sommers-Woods
 //
 
+#pragma once
+
+#include <iostream>
+
 class Process
 {
+public:
+	enum class State{READY, RUNNING, TERMINATED}; 
+
+	Process(int pid, int arrivalTime, int burstTime);
+	Process(int pid, int arrivalTime, int burstTime, State state);
+	~Process();
+	friend std::ostream& operator<<(std::ostream& os, Process& p);
+	int getPID();
+	int getArrivalTime();
+	int getBurstTime();
+	int getRemainingBurstTime();
+	// std::string getState();
+
 private:
 	int pid;
-	int arrival_time; // time in ms
-	int burst_time; // time in ms
-	enum class state{READY, RUNNING, TERMINATED};  
-
-public:
-	Process(int pid, int arrival_time, int burst_time);
-	~Process();
+	int arrivalTime; // time in ms
+	int burstTime; // time in ms
+	int remainingBurstTime;
+	State state;
 };
