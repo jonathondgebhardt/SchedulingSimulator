@@ -25,41 +25,33 @@ Process::~Process()
 {
 }
 
-// Overloading <<
+// Overloading '<<' for easier printing
 // https://msdn.microsoft.com/en-us/library/1z2f6c2k.aspx
-std::ostream& operator<<(std::ostream& os, Process& p)
+std::ostream& operator<<(std::ostream& os, const Process& p)
 {  
     // os << dt.mo << '/' << dt.da << '/' << dt.yr;
 
-	os << "PID: " << p.getPID() << ", burst time: " << p.getBurstTime() << ", arrival time: " << p.getArrivalTime() 
-		<< ", remaining time: " << p.getRemainingBurstTime() << ", state: UNKNOWN";
+	os << "PID: " << p.pid << ", arrival time: " << p.arrivalTime << ", burst time: " << p.burstTime
+		<< ", remaining time: " << p.remainingBurstTime << ", state: ";
+
+	switch(p.state)
+	{
+		case Process::State::READY:
+			os << "READY";
+			break;
+		case Process::State::RUNNING:
+			os << "RUNNING";
+			break;
+		case Process::State::TERMINATED:
+			os << "TERMINATED";
+			break;			
+	}
+	
     return os;  
 }
 
-int Process::getPID()
-{
-	return pid;
+// Overloading '<' for priority queue
+// https://stackoverflow.com/questions/9178083/priority-queue-for-user-defined-types
+bool operator<(const Process& a, const Process& b) {
+  return a.arrivalTime > b.arrivalTime;
 }
-
-int Process::getArrivalTime()
-{
-	return arrivalTime;
-}
-
-int Process::getBurstTime()
-{
-	return burstTime;
-}
-
-int Process::getRemainingBurstTime()
-{
-	return remainingBurstTime;
-}
-
-// std::string Process::getState()
-// {
-// 	if(state == State::READY)
-// 	{
-// 		return "READY";
-// 	}
-// }

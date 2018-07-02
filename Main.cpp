@@ -50,13 +50,19 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	// Create a list of processes from file contents.
 	std::vector<Process> processes = getProcesses(fileContents);
 
-	for(Process a : processes)
+	// Validate list of processes.
+	if(fileContents.size() != processes.size())
 	{
-		// a.toString();
-		std::cout << a << "\n";
+		std::cerr << "Error converting file input to processes\n";
+		return 1;
 	}
+
+	FCFS f(processes);
+
+	// std::cout << f.numProcesses();
 
 	return 0;
 }
@@ -69,13 +75,13 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 	
 	try
 	{
-		// Attempt to open file
+		// Attempt to open file.
 		if (file.is_open())
 		{
 			std::string line;
 			int index = 0;
 			
-			// Get line from file
+			// Get line from file.
 			while(getline(file, line))
 			{
 				// Tokenizing a string:
@@ -86,7 +92,7 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 				std::string intermediate;
 				int x;
 
-				// Tokenize line and store in array
+				// Tokenize line and store in array.
 				while(getline(ss, intermediate, '\t'))
 				{
 					x = std::stoi(intermediate);
@@ -94,16 +100,17 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 					index = (index+1) % 3;
 				}
 				
-				// Put line contents in vector
+				// Put line contents in vector.
 				contents.push_back(arr);
 			}
 		}
 		
 	}
-	// Handle non-number input
+	// Handle non-numeric input and re-initialize return value.
 	catch(std::invalid_argument e)
 	{
 		std::cerr << "Error parsing file\n";
+		contents = {};
 	}
 
 	file.close();
