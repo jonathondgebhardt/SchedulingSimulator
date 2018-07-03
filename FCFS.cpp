@@ -9,33 +9,25 @@
 
 FCFS::FCFS(const std::vector<Process> processes)
 {
-    std::priority_queue<Process>& q = new std::priority_queue<Process>();
     for(const Process p : processes)
     {
-        q.push(p);
+        q->push(p);
     }
 
-    std::cout << q.size() << "\n";
+    std::cout << q->size() << "\n";
 }
 
 FCFS::~FCFS()
 {
+    for(int i = 0; i < q->size(); ++i)
+    {
+        q->pop();
+    }
+
+    delete q;
 }
 
-int FCFS::numProcesses()
+void FCFS::process()
 {
-    return q.size();
+    Process p = q->pop();
 }
-
-// void FCFS::print_queue()
-// {
-//     while(q.empty() == false)
-//     {
-//         std::cout << (Process) q.pop() << "\n";
-//     }
-// }
-
-// std::ostream& operator<<(std::ostream& os, const FCFS& q)
-// {
-//     std::priority_queue<Process> temp_q = q;
-// }

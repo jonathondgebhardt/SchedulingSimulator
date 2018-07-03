@@ -62,8 +62,6 @@ int main(int argc, char **argv)
 
 	FCFS f(processes);
 
-	// std::cout << f.numProcesses();
-
 	return 0;
 }
 

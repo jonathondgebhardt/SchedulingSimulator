@@ -19,13 +19,11 @@ class FCFS
 {
 public:
 	// Member variables
-	std::priority_queue<Process>& q;
+	std::priority_queue<Process>* q = new std::priority_queue<Process>();
 
 	FCFS(const std::vector<Process> processes);
 	~FCFS();
-	// void print_queue();
-	// friend std::ostream& operator<<(std::ostream& os, const FCFS& q);
-	int numProcesses();
+	void process();
 };
 
 #endif
