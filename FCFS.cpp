@@ -9,25 +9,28 @@
 
 FCFS::FCFS(const std::vector<Process> processes)
 {
+    time = 0;
+
     for(const Process p : processes)
     {
-        q->push(p);
+        Process* temp = new Process(p.pid, p.arrivalTime, p.burstTime);
+        q->push(*temp);
     }
-
-    std::cout << q->size() << "\n";
 }
 
 FCFS::~FCFS()
 {
-    for(int i = 0; i < q->size(); ++i)
-    {
-        q->pop();
-    }
+    // for(int i = 0; i < q->size(); ++i)
+    // {
+    //     q->pop();
+    // }
 
-    delete q;
+    // delete q;
 }
 
 void FCFS::process()
 {
-    Process p = q->pop();
+    Process p = q->top();
+    q->pop();
+    std::cout << p << "\n";
 }

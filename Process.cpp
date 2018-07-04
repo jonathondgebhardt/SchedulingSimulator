@@ -13,28 +13,21 @@
 Process::Process(int pid, int arrivalTime, int burstTime) 
 	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime)
 {
-	State state = State::READY;
-}
-
-Process::Process(int pid, int arrivalTime, int burstTime, State state) 
-	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), state(state)
-{
 }
 
 Process::~Process()
 {
+	// delete state;
 }
 
 // Overloading '<<' for easier printing
 // https://msdn.microsoft.com/en-us/library/1z2f6c2k.aspx
 std::ostream& operator<<(std::ostream& os, const Process& p)
-{  
-    // os << dt.mo << '/' << dt.da << '/' << dt.yr;
-
+{
 	os << "PID: " << p.pid << ", arrival time: " << p.arrivalTime << ", burst time: " << p.burstTime
 		<< ", remaining time: " << p.remainingBurstTime << ", state: ";
 
-	switch(p.state)
+	switch(*p.state)
 	{
 		case Process::State::READY:
 			os << "READY";
@@ -44,7 +37,10 @@ std::ostream& operator<<(std::ostream& os, const Process& p)
 			break;
 		case Process::State::TERMINATED:
 			os << "TERMINATED";
-			break;			
+			break;
+		default:
+			os << "UNKNOWN";
+			break;
 	}
 	
     return os;  

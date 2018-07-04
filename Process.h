@@ -13,18 +13,17 @@
 class Process
 {
 public:
-	enum State{READY, RUNNING, TERMINATED}; 
+	enum State{READY, RUNNING, TERMINATED};
 
 	// Member variables
 	int pid;
 	int arrivalTime; // time in ms
 	int burstTime; // time in ms
 	int remainingBurstTime;
-	State state;
+	State* state = new State(State::READY);
 
 	// Member functions
 	Process(int pid, int arrivalTime, int burstTime);
-	Process(int pid, int arrivalTime, int burstTime, State state);
 	~Process();
 	friend std::ostream& operator<<(std::ostream& os, const Process& p);
 	friend bool operator<(const Process& a, const Process& b);

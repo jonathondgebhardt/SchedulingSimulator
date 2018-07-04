@@ -20,6 +20,7 @@ class FCFS
 public:
 	// Member variables
 	std::priority_queue<Process>* q = new std::priority_queue<Process>();
+	int time;
 
 	FCFS(const std::vector<Process> processes);
 	~FCFS();

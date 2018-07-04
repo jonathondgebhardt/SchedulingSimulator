@@ -17,6 +17,8 @@
 
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>&);
+template<typename T> void runProcesses(S s);
+// void runProcesses(FCFS f);
 
 // Expected args: input filename, type of scheduler
 
@@ -62,7 +64,30 @@ int main(int argc, char **argv)
 
 	FCFS f(processes);
 
+	runProcesses(f);
+
 	return 0;
+}
+
+// template<typename T>
+// void f(T s)
+// {
+//     std::cout << s << '\n';
+// }
+
+template<typename T> void runProcesses(S s)
+{
+	while(s.q->empty() == false)
+	{
+		Process p = s.q->top();
+    	std::cout << p << "\n";
+
+		s.time += p.burstTime;
+
+		s.q->pop();
+	}
+
+	std::cout << "\nTotal time: " << f.time << "\n";
 }
 
 std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
