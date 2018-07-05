@@ -11,7 +11,9 @@
 #include <string>
 
 Process::Process(int pid, int arrivalTime, int burstTime) 
-	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), timeServed(0)
+	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), 
+		timeServed(0), waitTime(0), completionTime(0)
+	  
 {
 }
 

@@ -7,6 +7,7 @@
 
 #include "Process.h"
 #include "FCFS.h"
+#include "RR.h"
 
 #include <iostream>
 #include <fstream>
@@ -18,8 +19,15 @@
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>&);
 double getAverageWaitingTime(const std::vector<Process>&);
+double getAverageResponseTime(const std::vector<Process>&);
+double getAverageTurnaroundTime(const std::vector<Process>&);
+void printReport(const std::vector<Process>&);
 
-// Expected args: input filename, type of scheduler
+/*
+	Test case 00
+	FCFS -> wait, 12.5, response: 21, turnaround: 21
+	RR -> wait: 20.5, response: 10.5, turnaround: 29
+*/
 
 int main(int argc, char **argv)
 {
@@ -64,7 +72,8 @@ int main(int argc, char **argv)
 	}
 	else if(schedulerType == "RR")
 	{
-		std::cout << "TODO: implement RR\n";
+		RR r(processes);
+		servedProcesses = r.run();
 	}
 	else if(schedulerType == "MLFQ")
 	{
@@ -76,23 +85,9 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	// Get and display average waiting time
-	double avgWaitTime = getAverageWaitingTime(servedProcesses);
-	std::cout << "Average waiting time for test case '" << fileName << "' using scheduler '" << schedulerType << "': " << avgWaitTime << "\n";
+	printReport(servedProcesses);
 
 	return 0;
-}
-
-double getAverageWaitingTime(const std::vector<Process>& servedProcesses)
-{
-	int totalTime = 0;
-
-	for(const auto a : servedProcesses)
-	{
-		totalTime += a.timeServed;
-	}
-
-	return totalTime / (double) servedProcesses.size();
 }
 
 std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
@@ -161,4 +156,58 @@ std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>& rawProc
 	}
 
 	return processes;
+}
+
+// Amount of time a process has been waiting in the ready queue
+double getAverageWaitingTime(const std::vector<Process>& servedProcesses)
+{
+	int totalTime = 0;
+
+	for(const auto a : servedProcesses)
+	{
+		totalTime += a.waitTime;
+	}
+
+	return totalTime / (double) servedProcesses.size();
+}
+
+// Amount of time from when a request was submitted until the first response is produced
+double getAverageResponseTime(const std::vector<Process>& servedProcesses)
+{
+	int totalTime = 0;
+
+	for(const auto a : servedProcesses)
+	{
+		totalTime += a.timeServed - a.arrivalTime;
+	}
+
+	return totalTime / (double) servedProcesses.size();
+}
+
+// Amount of time to execute a particular process
+double getAverageTurnaroundTime(const std::vector<Process>& servedProcesses)
+{
+	int totalTime = 0;
+
+	for(const auto a : servedProcesses)
+	{
+		totalTime += a.completionTime - a.arrivalTime;
+	}
+
+	return totalTime / (double) servedProcesses.size();
+}
+
+void printReport(const std::vector<Process>& servedProcesses)
+{
+	// Get and display average waiting time
+	double avgWaitTime = getAverageWaitingTime(servedProcesses);
+	double avgReponseTime = getAverageResponseTime(servedProcesses);
+	double avgTurnaroundTime = getAverageTurnaroundTime(servedProcesses);
+
+
+	std::cout << "=========================================\n";
+	std::cout << "Average waiting time: " << avgWaitTime << "\n";
+	std::cout << "Average reponse time: " << avgReponseTime << "\n";
+	std::cout << "Average turnaround time: " << avgTurnaroundTime << "\n";
+	std::cout << "=========================================\n";
 }

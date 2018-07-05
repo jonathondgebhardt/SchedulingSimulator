@@ -8,13 +8,20 @@
 #include "FCFS.h"
 
 FCFS::FCFS(const std::vector<Process> processes)
+    : time(0)
 {
-    time = 0;
+    std::priority_queue<Process> temp;
 
     for(const Process p : processes)
     {
-        Process* temp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        waiting->push(*temp);
+        Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
+        temp.push(*pTemp);
+    }
+
+    while(temp.empty() == false)
+    {
+        waiting->push(temp.top());
+        temp.pop();
     }
 }
 
@@ -41,10 +48,13 @@ std::vector<Process> FCFS::run()
         std::printf("PID %5d starts running at %5d\n", p.pid, time);
 
 		p.timeServed = time;
+        p.waitTime = p.timeServed - p.arrivalTime;
 		*p.state = Process::State::TERMINATED;
 
 		// Update time state
         time += p.burstTime;
+
+        std::printf("PID %5d has finished at %7d\n", p.pid, time);
 
 		// Remove process from queue and add to vector
 		waiting->pop();

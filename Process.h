@@ -21,6 +21,8 @@ public:
 	int burstTime; // time in ms
 	int remainingBurstTime;
 	int timeServed;
+	int waitTime;
+	int completionTime;
 	State* state = new State(State::READY);
 
 	// Member functions
