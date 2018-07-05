@@ -19,12 +19,13 @@ class FCFS
 {
 public:
 	// Member variables
-	std::priority_queue<Process>* q = new std::priority_queue<Process>();
+	std::priority_queue<Process>* waiting = new std::priority_queue<Process>();
+	std::vector<Process>* terminated = new std::vector<Process>();
 	int time;
 
 	FCFS(const std::vector<Process> processes);
 	~FCFS();
-	void process();
+	std::vector<Process> run();
 };
 
 #endif

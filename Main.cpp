@@ -17,8 +17,7 @@
 
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>&);
-std::vector<Process> runFCFS(std::vector<Process> processes);
-double getAverageWaitingTime(std::vector<Process> servedProcesses);
+double getAverageWaitingTime(const std::vector<Process>&);
 
 // Expected args: input filename, type of scheduler
 
@@ -55,11 +54,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	// 'Run' processes according to scheduler type
 	std::vector<Process> servedProcesses;
-
 	if(schedulerType == "FCFS")
 	{
-		servedProcesses = runFCFS(processes);
+		// servedProcesses = runFCFS(processes);
+		FCFS f(processes);
+		servedProcesses = f.run();
 	}
 	else if(schedulerType == "RR")
 	{
@@ -74,48 +75,24 @@ int main(int argc, char **argv)
 		std::cerr << "Incorrect scheduler type: ./simulator [INPUT FILENAME] [FCFS|RR|MLFQ]\n";
 		return 1;
 	}
-	
-	double avgWaitTime = getAverageWaitingTime(servedProcesses);
 
+	// Get and display average waiting time
+	double avgWaitTime = getAverageWaitingTime(servedProcesses);
 	std::cout << "Average waiting time for test case '" << fileName << "' using scheduler '" << schedulerType << "': " << avgWaitTime << "\n";
 
 	return 0;
 }
 
-double getAverageWaitingTime(std::vector<Process> servedProcesses)
+double getAverageWaitingTime(const std::vector<Process>& servedProcesses)
 {
 	int totalTime = 0;
 
-	for(auto a : servedProcesses)
+	for(const auto a : servedProcesses)
 	{
 		totalTime += a.timeServed;
 	}
 
 	return totalTime / (double) servedProcesses.size();
-}
-
-std::vector<Process> runFCFS(std::vector<Process> processes)
-{
-	FCFS f(processes);
-	std::vector<Process> servedProcesses;
-
-	// Serve all processes to completion
-	while(f.q->empty() == false)
-	{
-		// Update time served and state
-		Process p = f.q->top();
-		p.timeServed = f.time;
-		*p.state = Process::State::TERMINATED;
-
-		// Update time state
-		f.time += p.burstTime;
-
-		// Remove process from queue and add to vector
-		f.q->pop();
-		servedProcesses.push_back(p);
-	}
-
-	return servedProcesses;
 }
 
 std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)

@@ -14,7 +14,7 @@ FCFS::FCFS(const std::vector<Process> processes)
     for(const Process p : processes)
     {
         Process* temp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        q->push(*temp);
+        waiting->push(*temp);
     }
 }
 
@@ -28,9 +28,28 @@ FCFS::~FCFS()
     // delete q;
 }
 
-void FCFS::process()
+std::vector<Process> FCFS::run()
 {
-    Process p = q->top();
-    q->pop();
-    std::cout << p << "\n";
+    std::cout << "Selected scheduling algorithm: FCFS\n";
+
+	// Serve all processes to completion
+	while(waiting->empty() == false)
+	{
+		// Update time served and state
+		Process p = waiting->top();
+
+        std::printf("PID %5d starts running at %5d\n", p.pid, time);
+
+		p.timeServed = time;
+		*p.state = Process::State::TERMINATED;
+
+		// Update time state
+        time += p.burstTime;
+
+		// Remove process from queue and add to vector
+		waiting->pop();
+		terminated->push_back(p);
+	}
+
+	return *terminated;
 }
