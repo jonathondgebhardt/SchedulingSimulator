@@ -20,6 +20,7 @@ public:
 	int arrivalTime; // time in ms
 	int burstTime; // time in ms
 	int remainingBurstTime;
+	int timeServed;
 	State* state = new State(State::READY);
 
 	// Member functions

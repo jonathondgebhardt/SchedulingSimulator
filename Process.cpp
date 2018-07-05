@@ -11,7 +11,7 @@
 #include <string>
 
 Process::Process(int pid, int arrivalTime, int burstTime) 
-	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime)
+	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), timeServed(0)
 {
 }
 
@@ -25,7 +25,7 @@ Process::~Process()
 std::ostream& operator<<(std::ostream& os, const Process& p)
 {
 	os << "PID: " << p.pid << ", arrival time: " << p.arrivalTime << ", burst time: " << p.burstTime
-		<< ", remaining time: " << p.remainingBurstTime << ", state: ";
+		<< ", remaining time: " << p.remainingBurstTime << ", time served: " << p.timeServed << ", state: ";
 
 	switch(*p.state)
 	{

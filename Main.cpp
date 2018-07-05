@@ -17,8 +17,8 @@
 
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>&);
-template<typename T> void runProcesses(S s);
-// void runProcesses(FCFS f);
+std::vector<Process> runFCFS(std::vector<Process> processes);
+double getAverageWaitingTime(std::vector<Process> servedProcesses);
 
 // Expected args: input filename, type of scheduler
 
@@ -34,13 +34,6 @@ int main(int argc, char **argv)
 	// Get arguments.
 	std::string fileName = argv[1];	
 	std::string schedulerType = argv[2];
-
-	// Check for correct scheduler type.
-	if(schedulerType != "FCFS" && schedulerType != "RR" && schedulerType != "MLFQ")
-	{
-		std::cerr << "Incorrect scheduler type: ./simulator [INPUT FILENAME] [FCFS|RR|MLFQ]\n";
-		return 1;
-	}
 
 	// Read file contents and store in vector.
 	std::vector<std::array<int, 3>> fileContents = readInputFile(fileName);
@@ -62,32 +55,67 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	FCFS f(processes);
+	std::vector<Process> servedProcesses;
 
-	runProcesses(f);
+	if(schedulerType == "FCFS")
+	{
+		servedProcesses = runFCFS(processes);
+	}
+	else if(schedulerType == "RR")
+	{
+		std::cout << "TODO: implement RR\n";
+	}
+	else if(schedulerType == "MLFQ")
+	{
+		std::cout << "TODO: implement MLFQ\n";
+	}
+	else
+	{
+		std::cerr << "Incorrect scheduler type: ./simulator [INPUT FILENAME] [FCFS|RR|MLFQ]\n";
+		return 1;
+	}
+	
+	double avgWaitTime = getAverageWaitingTime(servedProcesses);
+
+	std::cout << "Average waiting time for test case '" << fileName << "' using scheduler '" << schedulerType << "': " << avgWaitTime << "\n";
 
 	return 0;
 }
 
-// template<typename T>
-// void f(T s)
-// {
-//     std::cout << s << '\n';
-// }
-
-template<typename T> void runProcesses(S s)
+double getAverageWaitingTime(std::vector<Process> servedProcesses)
 {
-	while(s.q->empty() == false)
+	int totalTime = 0;
+
+	for(auto a : servedProcesses)
 	{
-		Process p = s.q->top();
-    	std::cout << p << "\n";
-
-		s.time += p.burstTime;
-
-		s.q->pop();
+		totalTime += a.timeServed;
 	}
 
-	std::cout << "\nTotal time: " << f.time << "\n";
+	return totalTime / (double) servedProcesses.size();
+}
+
+std::vector<Process> runFCFS(std::vector<Process> processes)
+{
+	FCFS f(processes);
+	std::vector<Process> servedProcesses;
+
+	// Serve all processes to completion
+	while(f.q->empty() == false)
+	{
+		// Update time served and state
+		Process p = f.q->top();
+		p.timeServed = f.time;
+		*p.state = Process::State::TERMINATED;
+
+		// Update time state
+		f.time += p.burstTime;
+
+		// Remove process from queue and add to vector
+		f.q->pop();
+		servedProcesses.push_back(p);
+	}
+
+	return servedProcesses;
 }
 
 std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
