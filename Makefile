@@ -7,8 +7,8 @@
 
 all: simulator
 	
-simulator: process main process fcfs rr
-	g++ Main.o Process.o FCFS.o RR.o -o simulator -std=c++11
+simulator: process main process fcfs rr mlfq
+	g++ Main.o Process.o FCFS.o RR.o MLFQ.o -o simulator -std=c++11
 
 main: Main.cpp
 	g++ -c Main.cpp -std=c++11
@@ -21,6 +21,9 @@ fcfs: FCFS.h FCFS.cpp
 
 rr: RR.h RR.cpp
 	g++ -c RR.h RR.cpp -std=c++11
+
+mlfq: MLFQ.h MLFQ.cpp
+	g++ -c MLFQ.h MLFQ.cpp -std=c++11
 
 clean:
 	rm *o *h.gch simulator
