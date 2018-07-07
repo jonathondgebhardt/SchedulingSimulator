@@ -8,22 +8,22 @@
 #include "RR.h"
 
 RR::RR()
-    : quantum(8)
+    : Scheduler(8)
 {
 }
 
 RR::RR(int quantum)
-    : quantum(quantum)
+    : Scheduler(quantum)
 {
 }
 
 RR::RR(const std::vector<Process> processes)
-    : Scheduler(processes), quantum(8)
+    : Scheduler(processes, 8)
 {
 }
 
 RR::RR(const std::vector<Process> processes, int quantum)
-    : Scheduler(processes), quantum(quantum)
+    : Scheduler(processes, quantum)
 {
 }
 

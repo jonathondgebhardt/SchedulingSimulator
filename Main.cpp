@@ -8,6 +8,7 @@
 #include "Process.h"
 #include "FCFS.h"
 #include "RR.h"
+#include "MLFQ.h"
 
 #include <iostream>
 #include <fstream>
@@ -81,7 +82,9 @@ int main(int argc, char **argv)
 	else if(schedulerType == "MLFQ")
 	{
 		std::cout << "Selected scheduling algorithm: MLFQ\n";
-		std::cout << "TODO: implement MLFQ\n";
+		
+		MLFQ m(processes);
+		servedProcesses = m.run();
 	}
 	else
 	{
@@ -134,8 +137,9 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 		}
 		
 	}
-	// Handle non-numeric input and re-initialize return value.
-	catch(std::invalid_argument e)
+	// Handle non-numeric input and re-initialize return value. This catch
+	// raises a warning.
+	catch(std::invalid_argument)
 	{
 		std::cerr << "Error parsing file\n";
 		contents = {};

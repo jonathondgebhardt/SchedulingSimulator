@@ -18,9 +18,6 @@
 
 class RR : public Scheduler
 {
-protected:
-	int quantum;
-
 public:
 	RR();
 	RR(int quantum);
