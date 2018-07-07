@@ -8,6 +8,7 @@
 #ifndef FCFS_H
 #define FCFS_H
 
+#include "Scheduler.h"
 #include "Process.h"
 
 #include <queue>
@@ -15,14 +16,10 @@
 #include <iostream>
 
 
-class FCFS
+class FCFS : public Scheduler
 {
 public:
-	// Member variables
-	std::priority_queue<Process>* waiting = new std::priority_queue<Process>();
-	std::vector<Process>* terminated = new std::vector<Process>();
-	int time;
-
+	FCFS();
 	FCFS(const std::vector<Process> processes);
 	~FCFS();
 	std::vector<Process> run();

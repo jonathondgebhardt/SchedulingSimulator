@@ -66,17 +66,21 @@ int main(int argc, char **argv)
 	std::vector<Process> servedProcesses;
 	if(schedulerType == "FCFS")
 	{
-		// servedProcesses = runFCFS(processes);
+		std::cout << "Selected scheduling algorithm: FCFS\n";
+
 		FCFS f(processes);
 		servedProcesses = f.run();
 	}
 	else if(schedulerType == "RR")
 	{
+		std::cout << "Selected scheduling algorithm: RR\n";
+
 		RR r(processes);
 		servedProcesses = r.run();
 	}
 	else if(schedulerType == "MLFQ")
 	{
+		std::cout << "Selected scheduling algorithm: MLFQ\n";
 		std::cout << "TODO: implement MLFQ\n";
 	}
 	else
@@ -85,6 +89,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	// Print report showing statistics of scheduler.
 	printReport(servedProcesses);
 
 	return 0;
@@ -143,8 +148,9 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>& rawProcesses)
 {
+	// Populate vector with process objects with information provided by
+	// input vector.
 	std::vector<Process> processes;
-
 	for(const auto a : rawProcesses)
 	{
 		int pid = a[0];
@@ -199,11 +205,9 @@ double getAverageTurnaroundTime(const std::vector<Process>& servedProcesses)
 
 void printReport(const std::vector<Process>& servedProcesses)
 {
-	// Get and display average waiting time
 	double avgWaitTime = getAverageWaitingTime(servedProcesses);
 	double avgReponseTime = getAverageResponseTime(servedProcesses);
 	double avgTurnaroundTime = getAverageTurnaroundTime(servedProcesses);
-
 
 	std::cout << "=========================================\n";
 	std::cout << "Average waiting time: " << avgWaitTime << "\n";

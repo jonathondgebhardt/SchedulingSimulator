@@ -9,6 +9,7 @@
 #define MLFQ_H
 
 #include "Process.h"
+#include "Scheduler.h"
 #include "RR.h"
 #include "FCFS.h"
 
@@ -17,15 +18,14 @@
 #include <iostream>
 
 
-class MLFQ
+class MLFQ : public Scheduler
 {
+protected:
+	RR* rr1;
+	RR* rr2;
+	FCFS* f;
+
 public:
-	// Member variables
-	std::queue<Process>* waiting = new std::queue<Process>();
-	std::vector<Process>* terminated = new std::vector<Process>();
-
-	int time;
-
 	MLFQ(const std::vector<Process> processes);
 	~MLFQ();
 	std::vector<Process> run();

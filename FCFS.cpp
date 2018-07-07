@@ -7,24 +7,16 @@
 
 #include "FCFS.h"
 
-FCFS::FCFS(const std::vector<Process> processes)
-    : time(0)
+FCFS::FCFS()
 {
-    std::priority_queue<Process> temp;
-
-    for(const Process p : processes)
-    {
-        Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        temp.push(*pTemp);
-    }
-
-    while(temp.empty() == false)
-    {
-        waiting->push(temp.top());
-        temp.pop();
-    }
 }
 
+FCFS::FCFS(const std::vector<Process> processes)
+    : Scheduler(processes)
+{
+}
+
+// TODO: Implement destructor
 FCFS::~FCFS()
 {
     // for(int i = 0; i < q->size(); ++i)
@@ -37,19 +29,18 @@ FCFS::~FCFS()
 
 std::vector<Process> FCFS::run()
 {
-    std::cout << "Selected scheduling algorithm: FCFS\n";
-
 	// Serve all processes to completion
 	while(waiting->empty() == false)
 	{
 		// Update time served and state
-		Process p = waiting->top();
+		Process p = waiting->front();
 
         std::printf("PID %5d starts running at %5d\n", p.pid, time);
 
 		p.timeServed = time;
+        p.completionTime = p.burstTime + time;
         p.waitTime = p.timeServed - p.arrivalTime;
-		*p.state = Process::State::TERMINATED;
+		// *p.state = Process::State::TERMINATED;
 
 		// Update time state
         time += p.burstTime;

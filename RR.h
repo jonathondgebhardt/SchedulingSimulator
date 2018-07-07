@@ -9,21 +9,19 @@
 #define RR_H
 
 #include "Process.h"
+#include "Scheduler.h"
 
 #include <queue>
 #include <vector>
 #include <iostream>
 
 
-class RR
+class RR : public Scheduler
 {
-public:
-	// Member variables
-	std::queue<Process>* waiting = new std::queue<Process>();
-	std::vector<Process>* terminated = new std::vector<Process>();
-	int time;
-    int quantum;
+protected:
+	int quantum;
 
+public:
 	RR();
 	RR(int quantum);
 	RR(const std::vector<Process> processes);

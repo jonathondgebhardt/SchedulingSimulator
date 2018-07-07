@@ -10,6 +10,12 @@
 #include <iostream>
 #include <string>
 
+Process::Process()
+	: pid(-1), arrivalTime(-1), burstTime(-1), remainingBurstTime(-1),
+		timeServed(-1), waitTime(-1), completionTime(-1)
+{
+}
+
 Process::Process(int pid, int arrivalTime, int burstTime) 
 	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), 
 		timeServed(0), waitTime(0), completionTime(0)
@@ -27,23 +33,23 @@ Process::~Process()
 std::ostream& operator<<(std::ostream& os, const Process& p)
 {
 	os << "PID: " << p.pid << ", arrival time: " << p.arrivalTime << ", burst time: " << p.burstTime
-		<< ", remaining time: " << p.remainingBurstTime << ", time served: " << p.timeServed << ", state: ";
+		<< ", remaining time: " << p.remainingBurstTime << ", time served: " << p.timeServed;
 
-	switch(*p.state)
-	{
-		case Process::State::READY:
-			os << "READY";
-			break;
-		case Process::State::RUNNING:
-			os << "RUNNING";
-			break;
-		case Process::State::TERMINATED:
-			os << "TERMINATED";
-			break;
-		default:
-			os << "UNKNOWN";
-			break;
-	}
+	// switch(*p.state)
+	// {
+	// 	case Process::State::READY:
+	// 		os << "READY";
+	// 		break;
+	// 	case Process::State::RUNNING:
+	// 		os << "RUNNING";
+	// 		break;
+	// 	case Process::State::TERMINATED:
+	// 		os << "TERMINATED";
+	// 		break;
+	// 	default:
+	// 		os << "UNKNOWN";
+	// 		break;
+	// }
 	
     return os;  
 }

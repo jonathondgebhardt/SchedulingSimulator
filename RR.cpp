@@ -8,46 +8,26 @@
 #include "RR.h"
 
 RR::RR()
-    : time(0), quantum(8)
+    : quantum(8)
+{
+}
+
+RR::RR(int quantum)
+    : quantum(quantum)
 {
 }
 
 RR::RR(const std::vector<Process> processes)
-    : time(0), quantum(8)
+    : Scheduler(processes), quantum(8)
 {
-    std::priority_queue<Process> temp;
-
-    for(const Process p : processes)
-    {
-        Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        temp.push(*pTemp);
-    }
-
-    while(temp.empty() == false)
-    {
-        waiting->push(temp.top());
-        temp.pop();
-    }
 }
 
 RR::RR(const std::vector<Process> processes, int quantum)
-    : time(0), quantum(quantum)
+    : Scheduler(processes), quantum(quantum)
 {
-    std::priority_queue<Process> temp;
-
-    for(const Process p : processes)
-    {
-        Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        temp.push(*pTemp);
-    }
-
-    while(temp.empty() == false)
-    {
-        waiting->push(temp.top());
-        temp.pop();
-    }
 }
 
+// TODO: Implement destructor
 RR::~RR()
 {
     // for(int i = 0; i < q->size(); ++i)
@@ -60,8 +40,6 @@ RR::~RR()
 
 std::vector<Process> RR::run()
 {
-    std::cout << "Selected scheduling algorithm: RR\n";
-
 	// Serve all processes to completion
 	while(waiting->empty() == false)
 	{
@@ -76,7 +54,7 @@ std::vector<Process> RR::run()
             p.remainingBurstTime -= quantum;
             waiting->push(p);
 
-            std::printf("PID %5d is preempted by quantum and put back in waiting queue at %7d\n", p.pid, time);
+            std::printf("PID %5d is preempted by quantum, returned to waiting queue at %5d\n", p.pid, time);
         }
         else
         {
