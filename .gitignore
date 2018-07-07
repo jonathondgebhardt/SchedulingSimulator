@@ -1,2 +1,4 @@
-.o
-.h.gch
+*.o
+*.h.gch
+.vscode/*
+simulator

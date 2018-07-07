@@ -18,7 +18,7 @@ Process::Process()
 
 Process::Process(int pid, int arrivalTime, int burstTime) 
 	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), 
-		timeServed(0), waitTime(0), completionTime(0)
+		timeServed(0), waitTime(0), completionTime(0), pushBackTime(0)
 	  
 {
 }

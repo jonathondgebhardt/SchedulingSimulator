@@ -23,6 +23,7 @@ public:
 	int timeServed;
 	int waitTime;
 	int completionTime;
+	int pushBackTime;
 	// State* state = new State(State::READY);
 
 	// Member functions
