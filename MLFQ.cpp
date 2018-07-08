@@ -25,32 +25,30 @@ MLFQ::~MLFQ()
     // delete q;
 }
 
+// TODO: Should track which queue the process finished in
 std::vector<Process> MLFQ::run()
 {
-    Scheduler s = *rr1;
+    Scheduler* s = rr1;
     Process currentProcess;
     Process nextProcess;
 
     // Serve all processes to completion.
-    while(s.waiting->empty() == false)
+    while(s->waiting->empty() == false)
     {
-        // Select scheduler based on which queue level and whether it is empty.
-        if(rr1->waiting->empty() == false)
-        {
-            s = *rr1;
-        }
-        else if(rr2->waiting->empty() == false)
-        {
-            s = *rr2;
-        }
-        else
-        {
-            s = *f;
-        }
-
         // Get process from scheduler.
-        currentProcess = s.waiting->front();
-        s.waiting->pop();
+        currentProcess = s->waiting->front();
+        s->waiting->pop();
+
+        if(currentProcess.remainingBurstTime == currentProcess.burstTime)
+		{
+            // Find the amount of time for the first period of waiting
+			currentProcess.timeServed = time;  
+			currentProcess.waitTime = currentProcess.timeServed - currentProcess.arrivalTime;
+		} 
+        else
+		{
+			currentProcess.waitTime = currentProcess.waitTime + (time - currentProcess.pushBackTime);
+		}
 
         std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
 
@@ -68,62 +66,98 @@ std::vector<Process> MLFQ::run()
         time it starts running.
         */
 
+        // Get next process in line to determine appropriate queue
+        if(rr1->waiting->empty() == false)
+        {
+            nextProcess = rr1->waiting->front();
+        }
+        else if(rr2->waiting->empty() == false)
+        {
+            nextProcess = rr2->waiting->front();
+        }
+
         // Ignore FCFS, which has a quantum of -1 by default.
-        if(s.quantum != -1)
+        if(s->quantum != -1)
         {
             // If a process arrives while the current process is running, put back in
-            // current level queue.
-            if(nextProcess.arrivalTime < time + s.quantum)
+            // current level queue but only if the new process is a 'new' arrival.
+            if(nextProcess.burstTime == nextProcess.remainingBurstTime 
+                && nextProcess.arrivalTime < time + s->quantum)
             {
                 // Update time tracking variables.
-                int delta = nextProcess.arrivalTime - s.quantum;
+                // int delta = nextProcess.arrivalTime - s.quantum;
+                int delta = nextProcess.arrivalTime - time;
                 time += delta;
                 currentProcess.remainingBurstTime -= delta;
 
-                s.waiting->push(currentProcess);
+                s->waiting->push(currentProcess);
+                std::printf("PID %5d preempted by PID %5d, pushed to current Queue\n", currentProcess.pid, nextProcess.pid);
             }
-            // If a process finishes the entire quantum, put in the next level queue
+            
+            // If a process is not preempted by another one, handle accordingly.
             else
             {
                 // Update time tracking variables.
-                int currentQuantum = s.quantum;
-                time += currentQuantum;
-                currentProcess.remainingBurstTime -= currentQuantum;
-
-                // Find appropriate queue.
-                if(s.quantum == 8)
+                int currentQuantum = s->quantum;
+                if (currentProcess.remainingBurstTime > currentQuantum)
                 {
-                    rr2->waiting->push(currentProcess);
+                    time += currentQuantum;
+                    currentProcess.pushBackTime = time;
+                    currentProcess.remainingBurstTime -= currentQuantum;
                 }
                 else
                 {
-                    f->waiting->push(currentProcess);
+                    time += currentProcess.remainingBurstTime;
+                    currentProcess.remainingBurstTime = 0;
+                }
+                
+                // Find appropriate queue.
+                if(currentProcess.remainingBurstTime > 0)
+                {
+                    if(s->quantum == 8)
+                    {
+                        rr2->waiting->push(currentProcess);
+                        std::printf("PID %5d preempted by quantum, placed in Queue 1\n", currentProcess.pid);
+                    }
+                    else
+                    {
+                        f->waiting->push(currentProcess);
+                        std::printf("PID %5d preempted by quantum, placed in Queue 2\n", currentProcess.pid);
+                    }
+                }
+                else
+                {
+                    currentProcess.completionTime = time;
+                    terminated->push_back(currentProcess);
+                    std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
                 }
             }
         }
-        // Handle preemptive FCFS
+        // TODO: Handle preemptive FCFS
         else
         {
-            // If a process arrives while the current process is running, update time
-            // using delta.
-            if(currentProcess.remainingBurstTime > nextProcess.arrivalTime)
-            {
-                int delta = nextProcess.arrivalTime - time;
-                currentProcess.remainingBurstTime -= delta;
-                time += delta;
+            time += currentProcess.remainingBurstTime;
+            currentProcess.remainingBurstTime = 0;
+            currentProcess.completionTime = time;
+            terminated->push_back(currentProcess);
 
-            }
-
-            
+            std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
         }
 
-        std::cout << "Checking\n\t" << currentProcess << "\nagainst\n\t" << nextProcess << "\n";
 
-        std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
-
-
-        // Only quit once all processes have been served
-        // allProcessesServed = rr1.waiting->empty() == true && rr2.waiting->empty() == true && f.waiting->empty() == true;
+        // Select scheduler based on which queue level and whether it is empty.
+        if(rr1->waiting->empty() == false)
+        {
+            s = rr1;
+        }
+        else if(rr2->waiting->empty() == false)
+        {
+            s = rr2;
+        }
+        else
+        {
+            s = f;
+        }
     }
 
 
