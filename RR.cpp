@@ -43,8 +43,7 @@ std::vector<Process> RR::run()
 	// Serve all processes to completion
 	while(waiting->empty() == false)
 	{
-		Process p = waiting->front();
-		p.timeServed = time;  // Find the amount of time for the first period of waiting
+		Process p = waiting->front();	
 		
 		// If the process has not ran at all yet the wait time is equal to the
 		// amount of time served. Otherwise, the wait time is equal to the time
@@ -52,6 +51,7 @@ std::vector<Process> RR::run()
 		// back to the waiting queue and the current time
 		if(p.remainingBurstTime == p.burstTime)
 		{
+			p.timeServed = time;  // Find the amount of time for the first period of waiting
 			p.waitTime = p.timeServed - p.arrivalTime;
 		} else
 		{
