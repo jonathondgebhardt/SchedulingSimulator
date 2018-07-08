@@ -41,10 +41,12 @@ RR::~RR()
 std::vector<Process> RR::run()
 {
 	// Serve all processes to completion
-	while(waiting->empty() == false)
+	while(incoming->empty() == false || ready->empty() == false)
 	{
-		Process p = waiting->front();
-        waiting->pop();	
+        updateReadyQueue();
+
+		Process p = ready->front();
+        ready->pop();	
 		
 		// If the process has not ran at all yet the wait time is equal to the
 		// amount of time served. Otherwise, the wait time is equal to the time
@@ -72,9 +74,9 @@ std::vector<Process> RR::run()
             time += quantum;
 	        p.pushBackTime = time;
             p.remainingBurstTime -= quantum;
-            waiting->push(p);
+            ready->push(p);
 
-            std::printf("PID %5d is preempted by quantum, returned to waiting queue at %5d\n", p.pid, time);
+            std::printf("PID %5d is preempted by quantum, returned to ready queue at %5d\n", p.pid, time);
         }
 
         // Otherwise we update the time for the remainder of the burst time and set the

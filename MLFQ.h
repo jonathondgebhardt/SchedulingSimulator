@@ -31,6 +31,8 @@ public:
 	MLFQ(const std::vector<Process> processes);
 	~MLFQ();
 	std::vector<Process> run();
+	Scheduler* getNextQueue();
+	Process getNextProcess();
 };
 
 #endif

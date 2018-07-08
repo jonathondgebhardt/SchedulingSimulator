@@ -19,7 +19,8 @@ class Scheduler
 {
 public:
 	// Member variables
-	std::queue<Process>* waiting = new std::queue<Process>();
+	std::queue<Process>* ready = new std::queue<Process>();
+	std::priority_queue<Process>* incoming = new std::priority_queue<Process>();
 	std::vector<Process>* terminated = new std::vector<Process>();
 	int time;
 	int quantum;
@@ -29,6 +30,8 @@ public:
 	Scheduler(const std::vector<Process> processes);
 	Scheduler(const std::vector<Process> processes, const int quantum);
 	~Scheduler();
+
+	void updateReadyQueue();
 };
 
 #endif

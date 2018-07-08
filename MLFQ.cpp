@@ -34,23 +34,13 @@ std::vector<Process> MLFQ::run()
     Process nextProcess;
 
     // Serve all processes to completion.
-    while(s->waiting->empty() == false)
+    while(rr1->incoming->empty() == false || s->ready->empty() == false)
     {
-        // Get process from scheduler.
-        
-        do
-        {
-            currentProcess = s->waiting->front();
-            s->waiting->pop();
+        rr1->updateReadyQueue();
 
-            if(currentProcess.arrivalTime != time 
-                && currentProcess.remainingBurstTime == currentProcess.burstTime)
-            {
-                s->waiting->push(currentProcess);
-            }
-        }
-        while(currentProcess.arrivalTime != time 
-            && currentProcess.remainingBurstTime == currentProcess.burstTime);
+        // Get process from scheduler.
+        currentProcess = s->ready->front();
+        s->ready->pop();
         
         if(currentProcess.remainingBurstTime == currentProcess.burstTime)
 		{
@@ -65,29 +55,7 @@ std::vector<Process> MLFQ::run()
 
         std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
 
-        // Put back in appropriate scheduler queue.
-        /*
-        - A new process first enters Queue 0 (rr1) which is served in RR. When it
-        gains CPU, process receives 8 ms (should be set already). If it does not
-        finish in 8 ms, process is preempted and moved to Queue 1 (rr2).
-        - At Queue 1 (rr2), process is again served in RR and receives 16 additional
-        ms. If it still does not complete, it is preempted and moved to Queue 2 (f).
-        - At Queue 2 (f), process is served in FCFS.
-        - When a running process is preempted by a new process arriving at a higher
-        priority queue, it will be put back to the end of its current queue. I.e., 
-        its priority stays the same. A new full quantum will be given to it the next
-        time it starts running.
-        */
-
-        // Get next process in line to determine appropriate queue
-        if(rr1->waiting->empty() == false)
-        {
-            nextProcess = rr1->waiting->front();
-        }
-        else if(rr2->waiting->empty() == false)
-        {
-            nextProcess = rr2->waiting->front();
-        }
+        nextProcess = getNextProcess();
 
         // Ignore FCFS, which has a quantum of -1 by default.
         if(s->quantum != -1)
@@ -103,7 +71,7 @@ std::vector<Process> MLFQ::run()
                 time += delta;
                 currentProcess.remainingBurstTime -= delta;
 
-                s->waiting->push(currentProcess);
+                s->ready->push(currentProcess);
                 std::printf("PID %5d preempted by PID %5d, pushed to current Queue\n", currentProcess.pid, nextProcess.pid);
             }
             
@@ -129,12 +97,12 @@ std::vector<Process> MLFQ::run()
                 {
                     if(s->quantum == 8)
                     {
-                        rr2->waiting->push(currentProcess);
+                        rr2->ready->push(currentProcess);
                         std::printf("PID %5d preempted by quantum, placed in Queue 1\n", currentProcess.pid);
                     }
                     else
                     {
-                        f->waiting->push(currentProcess);
+                        f->ready->push(currentProcess);
                         std::printf("PID %5d preempted by quantum, placed in Queue 2\n", currentProcess.pid);
                     }
                 }
@@ -157,22 +125,57 @@ std::vector<Process> MLFQ::run()
             std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
         }
 
-
         // Select scheduler based on which queue level and whether it is empty.
-        if(rr1->waiting->empty() == false)
-        {
-            s = rr1;
-        }
-        else if(rr2->waiting->empty() == false)
-        {
-            s = rr2;
-        }
-        else
-        {
-            s = f;
-        }
+        s = getNextQueue();
     }
 
-
     return *terminated;
+}
+
+// TODO: Will return a queue even if the next process in line hasn't
+// 'arrived' yet.
+Scheduler* MLFQ::getNextQueue()
+{
+    Scheduler* temp;
+
+    if(rr1->ready->empty() == false)
+    {
+        temp = rr1;
+    }
+    
+    else if(rr2->ready->empty() == false)
+    {
+        temp = rr2;
+    }
+
+    else
+    {
+        temp = f;
+    }
+    
+    return temp;
+}
+
+Process MLFQ::getNextProcess()
+{
+    Process nextProcess;
+
+    if(rr1->ready->empty() == false)
+    {
+        nextProcess = rr1->ready->front();
+    }
+    else if(rr2->ready->empty() == false)
+    {
+        nextProcess = rr2->ready->front();
+    }
+    else if(f->ready->empty() == false)
+    {
+        nextProcess = f->ready->front();
+    }
+    else
+    {
+        nextProcess = rr1->incoming->top();
+    }
+
+    return nextProcess;
 }

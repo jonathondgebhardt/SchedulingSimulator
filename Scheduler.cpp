@@ -22,18 +22,10 @@ Scheduler::Scheduler(const std::vector<Process> processes)
 {
     // We'll use a priority queue to facilitate ordering processes by
     // arrival time.
-    std::priority_queue<Process> temp;
     for(const Process p : processes)
     {
         Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        temp.push(*pTemp);
-    }
-
-    // All processes should be sorted, populate queue.
-    while(temp.empty() == false)
-    {
-        waiting->push(temp.top());
-        temp.pop();
+        incoming->push(*pTemp);
     }
 }
 
@@ -42,18 +34,10 @@ Scheduler::Scheduler(const std::vector<Process> processes, int quantum)
 {
     // We'll use a priority queue to facilitate ordering processes by
     // arrival time.
-    std::priority_queue<Process> temp;
     for(const Process p : processes)
     {
         Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        temp.push(*pTemp);
-    }
-
-    // All processes should be sorted, populate queue.
-    while(temp.empty() == false)
-    {
-        waiting->push(temp.top());
-        temp.pop();
+        incoming->push(*pTemp);
     }
 }
 
@@ -66,4 +50,23 @@ Scheduler::~Scheduler()
     // }
 
     // delete q;
+}
+
+void Scheduler::updateReadyQueue()
+{
+    if(incoming->empty() == false)
+    {
+        Process temp;
+        do
+        {
+            temp = incoming->top();
+
+            if(temp.arrivalTime <= time)
+            {
+                ready->push(temp);
+                incoming->pop();;
+            }
+        }
+        while(temp.arrivalTime <= time && temp.pid != incoming->top().pid);
+    }
 }

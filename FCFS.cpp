@@ -30,25 +30,25 @@ FCFS::~FCFS()
 std::vector<Process> FCFS::run()
 {
 	// Serve all processes to completion
-	while(waiting->empty() == false)
+	while(incoming->empty() == false || ready->empty() == false)
 	{
-		// Update time served and state
-		Process p = waiting->front();
+		updateReadyQueue();
+
+		Process p = ready->front();
+		ready->pop();
 
         std::printf("PID %5d starts running at %5d\n", p.pid, time);
 
+		// Update time tracking variables.
 		p.timeServed = time;
         p.completionTime = p.burstTime + time;
         p.waitTime = p.timeServed - p.arrivalTime;
-		// *p.state = Process::State::TERMINATED;
 
 		// Update time state
         time += p.burstTime;
 
         std::printf("PID %5d has finished at %7d\n", p.pid, time);
 
-		// Remove process from queue and add to vector
-		waiting->pop();
 		terminated->push_back(p);
 	}
 
