@@ -4,18 +4,17 @@
 // Instructor: Dr. Yong Pei
 // Authors: Jonathon Gebhardt, Brittany Sommers-Woods
 //
-
-#include "Process.h"
-#include "FCFS.h"
-#include "RR.h"
-#include "MLFQ.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <array>
 #include <stdlib.h>
+
+#include "Process.h"
+#include "FCFS.h"
+#include "RR.h"
+#include "MLFQ.h"
 
 std::vector<std::array<int, 3>> readInputFile(const std::string&);
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>&);
@@ -35,7 +34,7 @@ int main(int argc, char **argv)
 	// Check for correct number of arguments.
 	if(argc != 3)
 	{
-		std::cerr << "Requires two arguments: ./simulator [INPUT FILENAME] [SCHEDULER TYPE]\n";
+		std::cerr << "Error -- Requires two arguments: ./simulator [INPUT FILENAME] [FCFS|RR|MLFQ]\n";
 		return 1;
 	}
 
@@ -49,7 +48,7 @@ int main(int argc, char **argv)
 	// Check for valid file contents.
 	if(fileContents.size() == 0)
 	{
-		std::cerr << "Error reading file\n";
+		std::cerr << "Error -- Error reading file\n";
 		return 1;
 	}
 
@@ -59,7 +58,7 @@ int main(int argc, char **argv)
 	// Validate list of processes.
 	if(fileContents.size() != processes.size())
 	{
-		std::cerr << "Error converting file input to processes\n";
+		std::cerr << "Error -- Error converting file input to processes\n";
 		return 1;
 	}
 

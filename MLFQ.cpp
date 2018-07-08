@@ -26,6 +26,7 @@ MLFQ::~MLFQ()
 }
 
 // TODO: Should track which queue the process finished in
+// TODO: Processes are popped even if they haven't arrived yet.
 std::vector<Process> MLFQ::run()
 {
     Scheduler* s = rr1;
@@ -36,18 +37,30 @@ std::vector<Process> MLFQ::run()
     while(s->waiting->empty() == false)
     {
         // Get process from scheduler.
-        currentProcess = s->waiting->front();
-        s->waiting->pop();
+        
+        do
+        {
+            currentProcess = s->waiting->front();
+            s->waiting->pop();
 
+            if(currentProcess.arrivalTime != time 
+                && currentProcess.remainingBurstTime == currentProcess.burstTime)
+            {
+                s->waiting->push(currentProcess);
+            }
+        }
+        while(currentProcess.arrivalTime != time 
+            && currentProcess.remainingBurstTime == currentProcess.burstTime);
+        
         if(currentProcess.remainingBurstTime == currentProcess.burstTime)
 		{
-            // Find the amount of time for the first period of waiting
+            // Find the amount of time for the first period of waiting.
 			currentProcess.timeServed = time;  
-			currentProcess.waitTime = currentProcess.timeServed - currentProcess.arrivalTime;
+			currentProcess.waitTime = time - currentProcess.arrivalTime;
 		} 
         else
 		{
-			currentProcess.waitTime = currentProcess.waitTime + (time - currentProcess.pushBackTime);
+			currentProcess.waitTime += time - currentProcess.pushBackTime;
 		}
 
         std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);

@@ -19,6 +19,7 @@
 class RR : public Scheduler
 {
 public:
+	// Member functions
 	RR();
 	RR(int quantum);
 	RR(const std::vector<Process> processes);

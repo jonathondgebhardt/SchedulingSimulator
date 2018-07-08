@@ -25,7 +25,6 @@ Process::Process(int pid, int arrivalTime, int burstTime)
 
 Process::~Process()
 {
-	// delete state;
 }
 
 // Overloading '<<' for easier printing

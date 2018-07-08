@@ -43,7 +43,8 @@ std::vector<Process> RR::run()
 	// Serve all processes to completion
 	while(waiting->empty() == false)
 	{
-		Process p = waiting->front();	
+		Process p = waiting->front();
+        waiting->pop();	
 		
 		// If the process has not ran at all yet the wait time is equal to the
 		// amount of time served. Otherwise, the wait time is equal to the time
@@ -53,15 +54,13 @@ std::vector<Process> RR::run()
 		{
             // Find the amount of time for the first period of waiting
 			p.timeServed = time;  
-			p.waitTime = p.timeServed - p.arrivalTime;
+			p.waitTime = time - p.arrivalTime;
 		} 
         else
 		{
-			p.waitTime = p.waitTime + (time - p.pushBackTime);
+			p.waitTime += time - p.pushBackTime;
 		}
-			
-		waiting->pop();
-
+		
         std::printf("PID %5d starts running at %5d\n", p.pid, time);
 
         // If the remaining burst time of the process is greater than the designated quantum

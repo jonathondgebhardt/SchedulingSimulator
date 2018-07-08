@@ -21,11 +21,13 @@
 class MLFQ : public Scheduler
 {
 protected:
+	// Member variables
 	RR* rr1;
 	RR* rr2;
 	FCFS* f;
 
 public:
+	// Member functions
 	MLFQ(const std::vector<Process> processes);
 	~MLFQ();
 	std::vector<Process> run();
