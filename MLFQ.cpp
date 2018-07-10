@@ -54,6 +54,27 @@ std::vector<Process> MLFQ::run()
         // Handle when s is round robin
         if(s->quantum != -1)
         {
+            /* 
+                Problem is in this if statement. 
+            
+                Based on test case 00, PID 1 arrives at 0 and executes for 1 ms
+                before it's preempted by PID 2. So ready queue transitions like this: 
+                    {1} -> {2, 1}
+                
+                I accomplished this on lines 85 and 86. I update the ready queue, which
+                how ever many processes have arrived since the time updated and pushes
+                them to the ready queue. This fine when there's only ever one process
+                in the queue.
+
+                PID executes for 1 ms before it's preempted by PID 3. So the ready queue
+                should transition like this:
+                    {2, 1} -> {3, 1, 2}
+                but actually transitions like this:
+                    {2, 1} -> {1, 3, 2}
+
+                We effectively need to put the new process at the beginning of the queue
+                and the preempted process at the end, but how do?
+            */
             // Case 1: current process is preempted by incoming process -> push
             if(nextProcess.timeServed < 0 && time + s->quantum > nextProcess.arrivalTime)
             {
@@ -185,12 +206,12 @@ void MLFQ::demote(Process* p, int currentQuantum)
     }
 }
 
-void MLFQ::preempt(Process* p, Scheduler* s)
-{
+// void MLFQ::preempt(Process* p, Scheduler* s)
+// {
     
-    while(incoming->top().arrivalTime <= time)
-    {
+//     while(incoming->top().arrivalTime <= time)
+//     {
 
-    }
+//     }
 
-}
+// }
