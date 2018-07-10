@@ -58,3 +58,7 @@ std::ostream& operator<<(std::ostream& os, const Process& p)
 bool operator<(const Process& a, const Process& b) {
   return a.arrivalTime > b.arrivalTime;
 }
+
+bool operator==(const Process& a, const Process& b) {
+  return a.pid == b.pid;
+}

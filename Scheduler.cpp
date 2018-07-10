@@ -80,12 +80,22 @@ void Scheduler::updateReadyQueue(Scheduler* s)
         {
             temp = incoming->top();
 
-            if(temp.arrivalTime <= time)
+            if(s->quantum != -1)
             {
-                s->ready->push(temp);
-                incoming->pop();
+                if(temp.arrivalTime <= time + s->quantum)
+                {
+                    s->ready->push(temp);
+                    incoming->pop();
+                }
+            }
+
+            else
+            {
+                Process top = incoming->top();
+
+                std::cout << top << "\n";
             }
         }
-        while(temp.arrivalTime <= time && temp.pid != incoming->top().pid);
+        while(temp.arrivalTime <= time + s->quantum && temp.pid != incoming->top().pid);
     }
 }

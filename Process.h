@@ -30,6 +30,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Process& p);
 	friend bool operator<(const Process& a, const Process& b);
+	friend bool operator==(const Process& a, const Process& b);
 };
 
 #endif
