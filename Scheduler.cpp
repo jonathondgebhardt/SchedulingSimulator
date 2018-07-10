@@ -64,7 +64,26 @@ void Scheduler::updateReadyQueue()
             if(temp.arrivalTime <= time)
             {
                 ready->push(temp);
-                incoming->pop();;
+                incoming->pop();
+            }
+        }
+        while(temp.arrivalTime <= time && temp.pid != incoming->top().pid);
+    }
+}
+
+void Scheduler::updateReadyQueue(Scheduler* s)
+{
+    if(incoming->empty() == false)
+    {
+        Process temp;
+        do
+        {
+            temp = incoming->top();
+
+            if(temp.arrivalTime <= time)
+            {
+                s->ready->push(temp);
+                incoming->pop();
             }
         }
         while(temp.arrivalTime <= time && temp.pid != incoming->top().pid);

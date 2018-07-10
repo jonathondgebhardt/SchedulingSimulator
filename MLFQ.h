@@ -33,6 +33,8 @@ public:
 	std::vector<Process> run();
 	Scheduler* getNextQueue();
 	Process getNextProcess();
+	void demote(Process* p, int currentQuantum);
+	void preempt(Process* p, Scheduler* s);
 };
 
 #endif

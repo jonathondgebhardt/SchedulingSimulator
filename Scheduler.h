@@ -32,6 +32,7 @@ public:
 	~Scheduler();
 
 	void updateReadyQueue();
+	void updateReadyQueue(Scheduler* s);
 };
 
 #endif

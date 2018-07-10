@@ -8,8 +8,9 @@
 #include "MLFQ.h"
 
 MLFQ::MLFQ(const std::vector<Process> processes)
+    : Scheduler(processes)
 {
-    rr1 = new RR(processes, 8);
+    rr1 = new RR(8);
     rr2 = new RR(16);
     f = new FCFS();
 }
@@ -33,100 +34,91 @@ std::vector<Process> MLFQ::run()
     Process currentProcess;
     Process nextProcess;
 
-    // Serve all processes to completion.
-    while(rr1->incoming->empty() == false || s->ready->empty() == false)
+    while(incoming->empty() == false || s->ready->empty() == false)
     {
-        rr1->updateReadyQueue();
+        updateReadyQueue(s);
 
-        // Get process from scheduler.
         currentProcess = s->ready->front();
         s->ready->pop();
-        
-        if(currentProcess.remainingBurstTime == currentProcess.burstTime)
-		{
-            // Find the amount of time for the first period of waiting.
-			currentProcess.timeServed = time;  
-			currentProcess.waitTime = time - currentProcess.arrivalTime;
-		} 
-        else
-		{
-			currentProcess.waitTime += time - currentProcess.pushBackTime;
-		}
-
-        std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
 
         nextProcess = getNextProcess();
 
-        // Ignore FCFS, which has a quantum of -1 by default.
+        std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
+
+        if(currentProcess.timeServed < 0)
+        {
+            currentProcess.timeServed = time;
+        }
+
+        // Update time
+        // Handle when s is round robin
         if(s->quantum != -1)
         {
-            // If a process arrives while the current process is running, put back in
-            // current level queue but only if the new process is a 'new' arrival.
-            if(nextProcess.burstTime == nextProcess.remainingBurstTime 
-                && nextProcess.arrivalTime < time + s->quantum)
+            // Case 1: current process is preempted by incoming process -> push
+            if(nextProcess.timeServed < 0 && time + s->quantum > nextProcess.arrivalTime)
             {
-                // Update time tracking variables.
-                // int delta = nextProcess.arrivalTime - s.quantum;
                 int delta = nextProcess.arrivalTime - time;
                 time += delta;
                 currentProcess.remainingBurstTime -= delta;
 
+                updateReadyQueue(rr1);
                 s->ready->push(currentProcess);
-                std::printf("PID %5d preempted by PID %5d, pushed to current Queue\n", currentProcess.pid, nextProcess.pid);
+
+                std::printf("PID %5d is preempted PID %5d, pushed back\n", currentProcess.pid, nextProcess.pid);
             }
             
-            // If a process is not preempted by another one, handle accordingly.
-            else
+            else 
             {
-                // Update time tracking variables.
-                int currentQuantum = s->quantum;
-                if (currentProcess.remainingBurstTime > currentQuantum)
+                // Case 2: current process is preempted by quantum -> demote                
+                if(time + s->quantum < currentProcess.remainingBurstTime)
                 {
-                    time += currentQuantum;
-                    currentProcess.pushBackTime = time;
-                    currentProcess.remainingBurstTime -= currentQuantum;
+                    time += s->quantum;
+                    currentProcess.remainingBurstTime -= s->quantum;
+                    demote(&currentProcess, s->quantum);
+
+                    std::printf("PID %5d is preempted by quantum, demoted\n", currentProcess.pid);
                 }
+
+                // Case 3: current process finishes -> terminate
                 else
                 {
                     time += currentProcess.remainingBurstTime;
                     currentProcess.remainingBurstTime = 0;
-                }
-                
-                // Find appropriate queue.
-                if(currentProcess.remainingBurstTime > 0)
-                {
-                    if(s->quantum == 8)
-                    {
-                        rr2->ready->push(currentProcess);
-                        std::printf("PID %5d preempted by quantum, placed in Queue 1\n", currentProcess.pid);
-                    }
-                    else
-                    {
-                        f->ready->push(currentProcess);
-                        std::printf("PID %5d preempted by quantum, placed in Queue 2\n", currentProcess.pid);
-                    }
-                }
-                else
-                {
-                    currentProcess.completionTime = time;
                     terminated->push_back(currentProcess);
-                    std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
+
+                    std::printf("PID %5d has finished at %7d\n", currentProcess.pid, time);
                 }
             }
         }
-        // TODO: Handle preemptive FCFS
+
         else
         {
-            time += currentProcess.remainingBurstTime;
-            currentProcess.remainingBurstTime = 0;
-            currentProcess.completionTime = time;
-            terminated->push_back(currentProcess);
+            // Case 1: current process is preempted by incoming queue -> push
+            if(time + currentProcess.remainingBurstTime > nextProcess.arrivalTime)
+            {
+                int delta = nextProcess.arrivalTime - time;
+                time += delta;
+                currentProcess.remainingBurstTime -= delta;
 
-            std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
-        }
+                updateReadyQueue(rr1);
+                s->ready->push(currentProcess);
 
-        // Select scheduler based on which queue level and whether it is empty.
-        s = getNextQueue();
+                std::printf("PID %5d is preempted by PID %5d, pushed back\n", currentProcess.pid, nextProcess.pid);
+            }
+
+            // Case 2: current process finishes -> terminate
+            else
+            {
+                time += currentProcess.remainingBurstTime;
+                currentProcess.remainingBurstTime = 0;
+                terminated->push_back(currentProcess);
+
+                std::printf("PID %5d has finished at %7d\n", currentProcess.pid, time);
+            }
+
+        } 
+
+        s = getNextQueue();  
     }
 
     return *terminated;
@@ -174,8 +166,31 @@ Process MLFQ::getNextProcess()
     }
     else
     {
-        nextProcess = rr1->incoming->top();
+        nextProcess = incoming->top();
     }
 
     return nextProcess;
+}
+
+void MLFQ::demote(Process* p, int currentQuantum)
+{
+    if(currentQuantum == -8)
+    {
+        rr2->ready->push(*p);
+    }
+
+    else if(currentQuantum == -16)
+    {
+        f->ready->push(*p);
+    }
+}
+
+void MLFQ::preempt(Process* p, Scheduler* s)
+{
+    
+    while(incoming->top().arrivalTime <= time)
+    {
+
+    }
+
 }
