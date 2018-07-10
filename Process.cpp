@@ -27,6 +27,11 @@ Process::~Process()
 {
 }
 
+bool Process::isNewArrival()
+{
+	return burstTime == remainingBurstTime;
+}
+
 // Overloading '<<' for easier printing
 // https://msdn.microsoft.com/en-us/library/1z2f6c2k.aspx
 std::ostream& operator<<(std::ostream& os, const Process& p)

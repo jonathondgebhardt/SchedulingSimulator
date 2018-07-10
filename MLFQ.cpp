@@ -56,7 +56,7 @@ std::vector<Process> MLFQ::run()
         if(s->quantum != -1)
         {
             // Case 1: current process is preempted by incoming process -> push
-            if(nextProcess.burstTime == nextProcess.remainingBurstTime && time + s->quantum > nextProcess.arrivalTime)
+            if(nextProcess.isNewArrival() && nextProcess.arrivalTime != -1 && time + s->quantum > nextProcess.arrivalTime)
             {
                 int delta = nextProcess.arrivalTime - time;
                 time += delta;
@@ -65,7 +65,7 @@ std::vector<Process> MLFQ::run()
                 // updateReadyQueue(rr1);
                 s->ready->push(currentProcess);
 
-                std::printf("PID %5d is preempted PID %5d, pushed back\n", currentProcess.pid, nextProcess.pid);
+                std::printf("PID %5d is preempted by PID %5d, pushed back\n", currentProcess.pid, nextProcess.pid);
             }
             
             else 
@@ -94,8 +94,8 @@ std::vector<Process> MLFQ::run()
 
         else
         {
-            // Case 1: current process is preempted by incoming queue -> push
-            if(time + currentProcess.remainingBurstTime > nextProcess.arrivalTime)
+            // Case 1: current process is preempted by incoming process -> push
+            if(nextProcess.arrivalTime != -1 && time + currentProcess.remainingBurstTime > nextProcess.arrivalTime)
             {
                 int delta = nextProcess.arrivalTime - time;
                 time += delta;
@@ -125,8 +125,6 @@ std::vector<Process> MLFQ::run()
     return *terminated;
 }
 
-// TODO: Will return a queue even if the next process in line hasn't
-// 'arrived' yet.
 Scheduler* MLFQ::getNextQueue()
 {
     Scheduler* temp;
@@ -168,7 +166,7 @@ Process MLFQ::getNextProcess()
         nextProcess = f->ready->front();
     }
 
-    else
+    else if(incoming->empty() == false)
     {
         nextProcess = incoming->top();
     }

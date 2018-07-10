@@ -76,7 +76,7 @@ std::vector<Process> RR::run()
             p.remainingBurstTime -= quantum;
             ready->push(p);
 
-            std::printf("PID %5d is preempted by quantum, returned to ready queue at %5d\n", p.pid, time);
+            std::printf("PID %5d is preempted by quantum, pushed back\n", p.pid);
         }
 
         // Otherwise we update the time for the remainder of the burst time and set the

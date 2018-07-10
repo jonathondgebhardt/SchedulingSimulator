@@ -27,6 +27,7 @@ public:
 	Process();
 	Process(int pid, int arrivalTime, int burstTime);
 	~Process();
+	bool isNewArrival();
 
 	friend std::ostream& operator<<(std::ostream& os, const Process& p);
 	friend bool operator<(const Process& a, const Process& b);
