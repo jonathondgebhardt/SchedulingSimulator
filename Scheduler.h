@@ -18,7 +18,6 @@
 class Scheduler
 {
 public:
-	// Member variables
 	std::queue<Process>* ready = new std::queue<Process>;
 	std::priority_queue<Process>* incoming = new std::priority_queue<Process>;
 	std::vector<Process>* terminated = new std::vector<Process>();

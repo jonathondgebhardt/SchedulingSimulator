@@ -47,7 +47,7 @@ std::vector<Process> FCFS::run()
 		// Update time state
         time += p.burstTime;
 
-        std::printf("PID %5d has finished at %7d\n", p.pid, time);
+        std::printf("PID %5d has finished at %5d\n", p.pid, time);
 
 		terminated->push_back(p);
 	}

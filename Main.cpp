@@ -23,12 +23,6 @@ double getAverageResponseTime(const std::vector<Process>&);
 double getAverageTurnaroundTime(const std::vector<Process>&);
 void printReport(const std::vector<Process>&);
 
-/*
-	Test case 00
-	FCFS -> wait, 12.5, response: 21, turnaround: 21
-	RR -> wait: 20.5, response: 10.5, turnaround: 29
-*/
-
 int main(int argc, char **argv)
 {
 	// Check for correct number of arguments.
@@ -62,7 +56,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	// 'Run' processes according to scheduler type
+	// 'Run' processes according to scheduler type.
 	std::vector<Process> servedProcesses;
 	if(schedulerType == "FCFS")
 	{

@@ -21,18 +21,18 @@
 class MLFQ : public Scheduler
 {
 protected:
-	// Member variables
 	RR* rr1;
 	RR* rr2;
 	FCFS* f;
 
 public:
-	// Member functions
 	MLFQ(const std::vector<Process> processes);
 	~MLFQ();
+
 	std::vector<Process> run();
 	Scheduler* getNextQueue();
 	Process getNextProcess(int window);
+	int getQuantum(Process* p);
 	void demote(Process* p);
 	void preempt(Process* p);
 };

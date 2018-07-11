@@ -38,9 +38,9 @@ RR::~RR()
     // delete q;
 }
 
+/// Serve all processes to completion.
 std::vector<Process> RR::run()
 {
-	// Serve all processes to completion
 	while(incoming->empty() == false || ready->empty() == false)
 	{
         updateReadyQueue();
@@ -51,7 +51,7 @@ std::vector<Process> RR::run()
 		// If the process has not ran at all yet the wait time is equal to the
 		// amount of time served. Otherwise, the wait time is equal to the time
 		// served added to the time difference from when the process was pushed
-		// back to the waiting queue and the current time
+		// back to the waiting queue and the current time.
 		if(p.remainingBurstTime == p.burstTime)
 		{
             // Find the amount of time for the first period of waiting
@@ -68,7 +68,7 @@ std::vector<Process> RR::run()
         // If the remaining burst time of the process is greater than the designated quantum
         // then update the time for the desired quantum length and subtract the same amount
         // of time from the remaining burst time ofthe process and then push into the wait
-        // queue again
+        // queue again.
         if(p.remainingBurstTime > quantum)
         {
             time += quantum;
@@ -81,7 +81,7 @@ std::vector<Process> RR::run()
 
         // Otherwise we update the time for the remainder of the burst time and set the
         // remaining burst to 0. The completion time is then set and the process is 
-        // moved to the terminated queue
+        // moved to the terminated queue.
         else
         {
             time += p.remainingBurstTime;
@@ -89,7 +89,7 @@ std::vector<Process> RR::run()
             p.completionTime = time;
             terminated->push_back(p);
 
-            std::printf("PID %5d has finished at %7d\n", p.pid, time);
+            std::printf("PID %5d has finished at %5d\n", p.pid, time);
         }	
 	}
 
