@@ -22,6 +22,7 @@ public:
 	int waitTime;
 	int completionTime;
 	int pushBackTime;
+	int priorityLevel;
 
 	// Member functions
 	Process();

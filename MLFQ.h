@@ -32,8 +32,9 @@ public:
 	~MLFQ();
 	std::vector<Process> run();
 	Scheduler* getNextQueue();
-	Process getNextProcess();
-	void demote(Process* p, int currentQuantum);
+	Process getNextProcess(int window);
+	void demote(Process* p);
+	void preempt(Process* p);
 };
 
 #endif

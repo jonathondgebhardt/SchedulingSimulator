@@ -75,28 +75,23 @@ void Scheduler::updateReadyQueue(Scheduler* s)
 {
     if(incoming->empty() == false)
     {
-        Process temp;
-        do
+        Process temp = incoming->top();
+        // Handle round robin
+        if(s->quantum != -1)
         {
-            // Handle round robin
-            if(s->quantum != -1)
+            if(temp.arrivalTime <= time + s->quantum)
             {
-                temp = incoming->top();
-
-                if(temp.arrivalTime <= time + s->quantum)
-                {
-                    s->ready->push(temp);
-                    incoming->pop();
-                }
-            }
-
-            // Handle FCFS
-            else
-            {
-                
+                s->ready->push(temp);
+                incoming->pop();
             }
         }
-        while(temp.arrivalTime <= time + s->quantum && temp.pid != incoming->top().pid);
+
+        // Handle FCFS
+        else
+        {
+            
+        }
+        
     }
 }
 

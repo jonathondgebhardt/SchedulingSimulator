@@ -12,13 +12,13 @@
 
 Process::Process()
 	: pid(-1), arrivalTime(-1), burstTime(-1), remainingBurstTime(-1),
-		timeServed(-1), waitTime(-1), completionTime(-1)
+		timeServed(-1), waitTime(-1), completionTime(-1), priorityLevel(0)
 {
 }
 
 Process::Process(int pid, int arrivalTime, int burstTime) 
 	: pid(pid), arrivalTime(arrivalTime), burstTime(burstTime), remainingBurstTime(burstTime), 
-		timeServed(0), waitTime(0), completionTime(0), pushBackTime(0)
+		timeServed(0), waitTime(0), completionTime(0), pushBackTime(0), priorityLevel(0)
 	  
 {
 }
@@ -62,20 +62,7 @@ std::ostream& operator<<(std::ostream& os, const Process& p)
 // https://stackoverflow.com/questions/9178083/priority-queue-for-user-defined-types
 bool operator<(const Process& a, const Process& b) 
 {
-	if(a.burstTime == a.remainingBurstTime && b.burstTime == b.remainingBurstTime)
-	{
-		return a.arrivalTime > b.arrivalTime;
-	}
-
-	if(a.burstTime == a.remainingBurstTime)
-	{
-		return false;
-	}
-
-	else
-	{
-		return true;
-	}
+	return a.arrivalTime > b.arrivalTime;
 }
 
 bool operator==(const Process& a, const Process& b) 

@@ -32,19 +32,31 @@ MLFQ::~MLFQ()
 std::vector<Process> MLFQ::run()
 {
     Scheduler* s = rr1;
-    Process currentProcess;
+    Process currentProcess = incoming->top();
+    incoming->pop();
     Process nextProcess;
 
-    while(incoming->empty() == false || s->ready->empty() == false)
+    while(currentProcess.remainingBurstTime > 0)
     {
-        updateReadyQueue(s);
+        int quantum = 8;
 
-        currentProcess = s->ready->front();
-        s->ready->pop();
+        if(currentProcess.priorityLevel == 1)
+        {
+            quantum = 16;
+        }
 
-        // resortReady(s);
+        else if(currentProcess.priorityLevel == 2)
+        {
+            quantum = currentProcess.burstTime;
+        }
 
-        nextProcess = getNextProcess();
+
+        nextProcess = getNextProcess(quantum);
+
+        if(nextProcess == currentProcess)
+        {
+            nextProcess = Process();
+        }
 
         std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
 
@@ -54,17 +66,17 @@ std::vector<Process> MLFQ::run()
         }
 
         // Handle when scheduler is round robin
-        if(s->quantum != -1)
+        if(currentProcess.priorityLevel != 2)
         {
             // Case 1: current process is preempted by incoming process -> push
-            if(nextProcess.isNewArrival() && nextProcess.arrivalTime != -1 && time + s->quantum > nextProcess.arrivalTime)
+            if(nextProcess.isNewArrival() && nextProcess.arrivalTime != -1 && time + quantum > nextProcess.arrivalTime && quantum < currentProcess.remainingBurstTime)
             {
                 int delta = nextProcess.arrivalTime - time;
                 time += delta;
                 currentProcess.remainingBurstTime -= delta;
 
-                // updateReadyQueue(rr1);
-                s->ready->push(currentProcess);
+                // s->ready->push(currentProcess);
+                preempt(&currentProcess);
 
                 std::printf("PID %5d is preempted by PID %5d, pushed back\n", currentProcess.pid, nextProcess.pid);
             }
@@ -72,11 +84,11 @@ std::vector<Process> MLFQ::run()
             else 
             {
                 // Case 2: current process is preempted by quantum -> demote                
-                if(s->quantum < currentProcess.remainingBurstTime)
+                if(quantum < currentProcess.remainingBurstTime)
                 {
-                    time += s->quantum;
-                    currentProcess.remainingBurstTime -= s->quantum;
-                    demote(&currentProcess, s->quantum);
+                    time += quantum;
+                    currentProcess.remainingBurstTime -= quantum;
+                    demote(&currentProcess);
 
                     std::printf("PID %5d is preempted by quantum, demoted\n", currentProcess.pid);
                 }
@@ -102,8 +114,8 @@ std::vector<Process> MLFQ::run()
                 time += delta;
                 currentProcess.remainingBurstTime -= delta;
 
-                updateReadyQueue(rr1);
-                s->ready->push(currentProcess);
+                // s->ready->push(currentProcess);
+                preempt(&currentProcess);
 
                 std::printf("PID %5d is preempted by PID %5d, pushed back\n", currentProcess.pid, nextProcess.pid);
             }
@@ -120,7 +132,12 @@ std::vector<Process> MLFQ::run()
 
         } 
         
-        s = getNextQueue();  
+        if(nextProcess.pid != -1)
+        {
+            currentProcess = nextProcess;
+        }
+
+        s = getNextQueue();
     }
 
     return *terminated;
@@ -148,42 +165,67 @@ Scheduler* MLFQ::getNextQueue()
     return temp;
 }
 
-Process MLFQ::getNextProcess()
+Process MLFQ::getNextProcess(int window)
 {
     Process nextProcess;
 
-    if(rr1->ready->empty() == false)
+    if(incoming->empty() == false && incoming->top().arrivalTime < time + window)
+    {
+        nextProcess = incoming->top();
+        incoming->pop();
+    }
+
+    else if(rr1->ready->empty() == false)
     {
         nextProcess = rr1->ready->front();
+        rr1->ready->pop();
     }
 
     else if(rr2->ready->empty() == false)
     {
         nextProcess = rr2->ready->front();
+        rr2->ready->pop();
     }
     
     else if(f->ready->empty() == false)
     {
         nextProcess = f->ready->front();
-    }
-
-    else if(incoming->empty() == false)
-    {
-        nextProcess = incoming->top();
+        f->ready->pop();
     }
 
     return nextProcess;
 }
 
-void MLFQ::demote(Process* p, int currentQuantum)
+void MLFQ::demote(Process* p)
 {
-    if(currentQuantum == 8)
+    if(p->priorityLevel == 0)
+    {
+        p->priorityLevel = 1;
+        rr2->ready->push(*p);
+    }
+
+    else
+    {
+        p->priorityLevel = 2;
+        f->ready->push(*p);
+    }
+}
+
+void MLFQ::preempt(Process* p)
+{
+    if(p->priorityLevel == 0)
+    {
+        rr1->ready->push(*p);
+    }
+
+    else if(p->priorityLevel == 1)
     {
         rr2->ready->push(*p);
     }
 
     else
     {
+        p->priorityLevel = 2;
         f->ready->push(*p);
     }
 }
