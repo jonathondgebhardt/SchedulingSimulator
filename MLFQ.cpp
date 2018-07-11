@@ -42,6 +42,8 @@ std::vector<Process> MLFQ::run()
         currentProcess = s->ready->front();
         s->ready->pop();
 
+        // resortReady(s);
+
         nextProcess = getNextProcess();
 
         std::printf("PID %5d starts running at %5d\n", currentProcess.pid, time);
@@ -51,8 +53,7 @@ std::vector<Process> MLFQ::run()
             currentProcess.timeServed = time;
         }
 
-        // Update time
-        // Handle when s is round robin
+        // Handle when scheduler is round robin
         if(s->quantum != -1)
         {
             // Case 1: current process is preempted by incoming process -> push
@@ -118,7 +119,7 @@ std::vector<Process> MLFQ::run()
             }
 
         } 
-
+        
         s = getNextQueue();  
     }
 
@@ -186,13 +187,3 @@ void MLFQ::demote(Process* p, int currentQuantum)
         f->ready->push(*p);
     }
 }
-
-// void MLFQ::preempt(Process* p, Scheduler* s)
-// {
-    
-//     while(incoming->top().arrivalTime <= time)
-//     {
-
-//     }
-
-// }

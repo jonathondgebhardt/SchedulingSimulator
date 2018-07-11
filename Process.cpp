@@ -60,10 +60,25 @@ std::ostream& operator<<(std::ostream& os, const Process& p)
 
 // Overloading '<' for priority queue
 // https://stackoverflow.com/questions/9178083/priority-queue-for-user-defined-types
-bool operator<(const Process& a, const Process& b) {
-  return a.arrivalTime > b.arrivalTime;
+bool operator<(const Process& a, const Process& b) 
+{
+	if(a.burstTime == a.remainingBurstTime && b.burstTime == b.remainingBurstTime)
+	{
+		return a.arrivalTime > b.arrivalTime;
+	}
+
+	if(a.burstTime == a.remainingBurstTime)
+	{
+		return false;
+	}
+
+	else
+	{
+		return true;
+	}
 }
 
-bool operator==(const Process& a, const Process& b) {
+bool operator==(const Process& a, const Process& b) 
+{
   return a.pid == b.pid;
 }

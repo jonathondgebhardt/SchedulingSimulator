@@ -78,10 +78,11 @@ void Scheduler::updateReadyQueue(Scheduler* s)
         Process temp;
         do
         {
-            temp = incoming->top();
-
+            // Handle round robin
             if(s->quantum != -1)
             {
+                temp = incoming->top();
+
                 if(temp.arrivalTime <= time + s->quantum)
                 {
                     s->ready->push(temp);
@@ -89,13 +90,30 @@ void Scheduler::updateReadyQueue(Scheduler* s)
                 }
             }
 
+            // Handle FCFS
             else
             {
-                Process top = incoming->top();
-
-                std::cout << top << "\n";
+                
             }
         }
         while(temp.arrivalTime <= time + s->quantum && temp.pid != incoming->top().pid);
+    }
+}
+
+bool Scheduler::newArrivalCompare(Process a, Process b)
+{
+    if(a.isNewArrival())
+    {
+        return true;
+    }
+
+    else if(b.isNewArrival())
+    {
+        return false;
+    }
+
+    else
+    {
+        return a < b;
     }
 }
