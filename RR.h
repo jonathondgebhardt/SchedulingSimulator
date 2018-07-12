@@ -18,15 +18,13 @@
 
 class RR : public Scheduler
 {
-protected:
-	int quantum;
-
 public:
 	RR();
 	RR(int quantum);
 	RR(const std::vector<Process> processes);
 	RR(const std::vector<Process> processes, int quantum);
 	~RR();
+
 	std::vector<Process> run();
 };
 

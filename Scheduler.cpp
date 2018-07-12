@@ -8,7 +8,12 @@
 #include "Scheduler.h"
 
 Scheduler::Scheduler()
-    : time(0)
+    : time(0), quantum(-1)
+{
+}
+
+Scheduler::Scheduler(const int quantum)
+    : time(0), quantum(quantum)
 {
 }
 
@@ -17,28 +22,66 @@ Scheduler::Scheduler(const std::vector<Process> processes)
 {
     // We'll use a priority queue to facilitate ordering processes by
     // arrival time.
-    std::priority_queue<Process> temp;
     for(const Process p : processes)
     {
         Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
-        temp.push(*pTemp);
-    }
-
-    // All processes should be sorted, populate queue.
-    while(temp.empty() == false)
-    {
-        waiting->push(temp.top());
-        temp.pop();
+        incoming->push(*pTemp);
     }
 }
 
-// TODO: Implement destructor
+Scheduler::Scheduler(const std::vector<Process> processes, int quantum)
+    : time(0), quantum(quantum)
+{
+    // We'll use a priority queue to facilitate ordering processes by
+    // arrival time.
+    for(const Process p : processes)
+    {
+        Process* pTemp = new Process(p.pid, p.arrivalTime, p.burstTime);
+        incoming->push(*pTemp);
+    }
+}
+
 Scheduler::~Scheduler()
 {
-    // for(int i = 0; i < q->size(); ++i)
-    // {
-    //     q->pop();
-    // }
+    while(ready->empty() == false)
+    {
+        ready->pop();
+    }
 
-    // delete q;
+    while(incoming->empty() == false)
+    {
+        incoming->pop();
+    }
+
+    auto pos = terminated->begin();
+    const auto end = terminated->end();
+
+    for(; pos != end; ++pos)
+    {
+        terminated->erase(pos);
+    }
+
+    delete ready;
+    delete incoming;
+    delete terminated;
+}
+
+/// Use the incoming queue to populate the ready queue.
+void Scheduler::updateReadyQueue()
+{
+    if(incoming->empty() == false)
+    {
+        Process temp;
+        do
+        {
+            temp = incoming->top();
+
+            if(temp.arrivalTime <= time)
+            {
+                ready->push(temp);
+                incoming->pop();
+            }
+        }
+        while(temp.arrivalTime <= time && temp.pid != incoming->top().pid);
+    }
 }

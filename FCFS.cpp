@@ -16,39 +16,34 @@ FCFS::FCFS(const std::vector<Process> processes)
 {
 }
 
-// TODO: Implement destructor
 FCFS::~FCFS()
 {
-    // for(int i = 0; i < q->size(); ++i)
-    // {
-    //     q->pop();
-    // }
-
-    // delete q;
 }
 
+/// Use First Come First Serve algorithm (FCFS) to serve all 
+/// processes to completion. FCFS is a non-preemptive scheduler that 
+/// allows a process to execute for it's entire burst time.
 std::vector<Process> FCFS::run()
 {
-	// Serve all processes to completion
-	while(waiting->empty() == false)
+	while(incoming->empty() == false || ready->empty() == false)
 	{
-		// Update time served and state
-		Process p = waiting->front();
+		updateReadyQueue();
+
+		Process p = ready->front();
+		ready->pop();
 
         std::printf("PID %5d starts running at %5d\n", p.pid, time);
 
+		// Update time tracking variables.
 		p.timeServed = time;
         p.completionTime = p.burstTime + time;
         p.waitTime = p.timeServed - p.arrivalTime;
-		// *p.state = Process::State::TERMINATED;
 
 		// Update time state
         time += p.burstTime;
 
-        std::printf("PID %5d has finished at %7d\n", p.pid, time);
+        std::printf("PID %5d has finished at %5d\n", p.pid, time);
 
-		// Remove process from queue and add to vector
-		waiting->pop();
 		terminated->push_back(p);
 	}
 

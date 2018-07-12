@@ -28,7 +28,13 @@ protected:
 public:
 	MLFQ(const std::vector<Process> processes);
 	~MLFQ();
+
 	std::vector<Process> run();
+	Scheduler* getNextQueue();
+	Process getNextProcess(int window);
+	int getQuantum(Process* p);
+	void demote(Process* p);
+	void preempt(Process* p);
 };
 
 #endif

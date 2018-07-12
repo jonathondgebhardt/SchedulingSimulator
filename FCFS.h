@@ -22,6 +22,7 @@ public:
 	FCFS();
 	FCFS(const std::vector<Process> processes);
 	~FCFS();
+	
 	std::vector<Process> run();
 };
 
