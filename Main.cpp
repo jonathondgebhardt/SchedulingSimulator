@@ -125,7 +125,7 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 		
 	}
 	// Handle non-numeric input and re-initialize return value.
-	catch(std::invalid_argument)
+	catch(std::invalid_argument& e)
 	{
 		std::cerr << "Error parsing file\n";
 		contents = {};
