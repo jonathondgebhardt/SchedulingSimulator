@@ -32,34 +32,18 @@ bool Process::isNewArrival()
 	return burstTime == remainingBurstTime;
 }
 
-// Overloading '<<' for easier printing
-// https://msdn.microsoft.com/en-us/library/1z2f6c2k.aspx
+/// Overloading '<<' for easier printing.
+/// https://msdn.microsoft.com/en-us/library/1z2f6c2k.aspx
 std::ostream& operator<<(std::ostream& os, const Process& p)
 {
 	os << "PID: " << p.pid << ", arrival time: " << p.arrivalTime << ", burst time: " << p.burstTime
 		<< ", remaining time: " << p.remainingBurstTime << ", time served: " << p.timeServed;
-
-	// switch(*p.state)
-	// {
-	// 	case Process::State::READY:
-	// 		os << "READY";
-	// 		break;
-	// 	case Process::State::RUNNING:
-	// 		os << "RUNNING";
-	// 		break;
-	// 	case Process::State::TERMINATED:
-	// 		os << "TERMINATED";
-	// 		break;
-	// 	default:
-	// 		os << "UNKNOWN";
-	// 		break;
-	// }
 	
-    return os;  
+    return os;
 }
 
-// Overloading '<' for priority queue
-// https://stackoverflow.com/questions/9178083/priority-queue-for-user-defined-types
+/// Overloading '<' for priority queue.
+/// https://stackoverflow.com/questions/9178083/priority-queue-for-user-defined-types
 bool operator<(const Process& a, const Process& b) 
 {
 	return a.arrivalTime > b.arrivalTime;

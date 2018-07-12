@@ -4,6 +4,7 @@
 // Instructor: Dr. Yong Pei
 // Authors: Jonathon Gebhardt, Brittany Sommers-Woods
 //
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -49,13 +50,6 @@ int main(int argc, char **argv)
 	// Create a list of processes from file contents.
 	std::vector<Process> processes = getProcesses(fileContents);
 
-	// Validate list of processes.
-	if(fileContents.size() != processes.size())
-	{
-		std::cerr << "Error -- Error converting file input to processes\n";
-		return 1;
-	}
-
 	// 'Run' processes according to scheduler type.
 	std::vector<Process> servedProcesses;
 	if(schedulerType == "FCFS")
@@ -91,6 +85,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+/// Reads input file and converts file contents to a vector of integer arrays.
 std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 {
 	std::vector<std::array<int, 3>> contents;
@@ -110,7 +105,6 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 			{
 				// Tokenizing a string:
 				// https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
-
 				std::array<int, 3> arr;
 				std::stringstream ss(line);
 				std::string intermediate;
@@ -130,8 +124,7 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 		}
 		
 	}
-	// Handle non-numeric input and re-initialize return value. This catch
-	// raises a warning.
+	// Handle non-numeric input and re-initialize return value.
 	catch(std::invalid_argument)
 	{
 		std::cerr << "Error parsing file\n";
@@ -143,10 +136,9 @@ std::vector<std::array<int, 3>> readInputFile(const std::string& fileName)
 	return contents;
 }
 
+/// Populate vector with process objects with information provided by input vector.
 std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>& rawProcesses)
 {
-	// Populate vector with process objects with information provided by
-	// input vector.
 	std::vector<Process> processes;
 	for(const auto a : rawProcesses)
 	{
@@ -161,7 +153,7 @@ std::vector<Process> getProcesses(const std::vector<std::array<int, 3>>& rawProc
 	return processes;
 }
 
-// Amount of time a process has been waiting in the ready queue
+/// Amount of time a process has been waiting in the ready queue.
 double getAverageWaitingTime(const std::vector<Process>& servedProcesses)
 {
 	int totalTime = 0;
@@ -174,7 +166,7 @@ double getAverageWaitingTime(const std::vector<Process>& servedProcesses)
 	return totalTime / (double) servedProcesses.size();
 }
 
-// Amount of time from when a request was submitted until the first response is produced
+/// Amount of time from when a request was submitted until the first response is produced.
 double getAverageResponseTime(const std::vector<Process>& servedProcesses)
 {
 	int totalTime = 0;
@@ -187,7 +179,7 @@ double getAverageResponseTime(const std::vector<Process>& servedProcesses)
 	return totalTime / (double) servedProcesses.size();
 }
 
-// Amount of time to execute a particular process
+/// Amount of time to execute a particular process.
 double getAverageTurnaroundTime(const std::vector<Process>& servedProcesses)
 {
 	int totalTime = 0;
@@ -200,6 +192,7 @@ double getAverageTurnaroundTime(const std::vector<Process>& servedProcesses)
 	return totalTime / (double) servedProcesses.size();
 }
 
+/// Print a report showing time statistics.
 void printReport(const std::vector<Process>& servedProcesses)
 {
 	double avgWaitTime = getAverageWaitingTime(servedProcesses);

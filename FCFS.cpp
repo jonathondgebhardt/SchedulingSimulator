@@ -27,9 +27,11 @@ FCFS::~FCFS()
     // delete q;
 }
 
+/// Use First Come First Serve algorithm (FCFS) to serve all 
+/// processes to completion. FCFS is a non-preemptive scheduler that 
+/// allows a process to execute for it's entire burst time.
 std::vector<Process> FCFS::run()
 {
-	// Serve all processes to completion
 	while(incoming->empty() == false || ready->empty() == false)
 	{
 		updateReadyQueue();

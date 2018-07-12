@@ -48,28 +48,30 @@ std::vector<Process> RR::run()
 		Process p = ready->front();
         ready->pop();	
 		
-	// Double checks that if a process happens to be pushed back while also being
-	// the first process ran that it is put back in the correct place in the queue
-	// rather than in the front of the queue by default
-	if(p.pushBackTime > 0 && p.pushBackTime == time)
-	{
-		ready->push(p);
-		continue;
-	}
-		// If the process has not ran at all yet the wait time is equal to the
-		// amount of time served. Otherwise, the wait time is equal to the time
-		// served added to the time difference from when the process was pushed
-		// back to the waiting queue and the current time.
-	if(p.remainingBurstTime == p.burstTime)
-	{
-            // Find the amount of time for the first period of waiting
-		p.timeServed = time;  
-		p.waitTime = time - p.arrivalTime;
-	} 
+        // Double checks that if a process happens to be pushed back while also being
+        // the first process ran that it is put back in the correct place in the queue
+        // rather than in the front of the queue by default.
+        if(p.pushBackTime > 0 && p.pushBackTime == time)
+        {
+            ready->push(p);
+            continue;
+        }
+
+        // If the process has not ran at all yet the wait time is equal to the
+        // amount of time served. Otherwise, the wait time is equal to the time
+        // served added to the time difference from when the process was pushed
+        // back to the waiting queue and the current time.
+        if(p.remainingBurstTime == p.burstTime)
+        {
+            // Find the amount of time for the first period of waiting.
+            p.timeServed = time;  
+            p.waitTime = time - p.arrivalTime;
+        } 
+        
         else
-	{
-		p.waitTime += time - p.pushBackTime;
-	}
+        {
+            p.waitTime += time - p.pushBackTime;
+        }
 		
         std::printf("PID %5d starts running at %5d\n", p.pid, time);
 
@@ -80,7 +82,7 @@ std::vector<Process> RR::run()
         if(p.remainingBurstTime > quantum)
         {
             time += quantum;
-	    p.pushBackTime = time;
+	        p.pushBackTime = time;
             p.remainingBurstTime -= quantum;
             ready->push(p);
 

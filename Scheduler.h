@@ -31,9 +31,6 @@ public:
 	~Scheduler();
 
 	void updateReadyQueue();
-	void updateReadyQueue(Scheduler* s);
-	bool newArrivalCompare(Process a, Process b);
-
 };
 
 #endif

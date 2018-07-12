@@ -52,6 +52,7 @@ Scheduler::~Scheduler()
     // delete q;
 }
 
+/// Use the incoming queue to populate the ready queue.
 void Scheduler::updateReadyQueue()
 {
     if(incoming->empty() == false)
@@ -68,47 +69,5 @@ void Scheduler::updateReadyQueue()
             }
         }
         while(temp.arrivalTime <= time && temp.pid != incoming->top().pid);
-    }
-}
-
-void Scheduler::updateReadyQueue(Scheduler* s)
-{
-    if(incoming->empty() == false)
-    {
-        Process temp = incoming->top();
-        // Handle round robin
-        if(s->quantum != -1)
-        {
-            if(temp.arrivalTime <= time + s->quantum)
-            {
-                s->ready->push(temp);
-                incoming->pop();
-            }
-        }
-
-        // Handle FCFS
-        else
-        {
-            
-        }
-        
-    }
-}
-
-bool Scheduler::newArrivalCompare(Process a, Process b)
-{
-    if(a.isNewArrival())
-    {
-        return true;
-    }
-
-    else if(b.isNewArrival())
-    {
-        return false;
-    }
-
-    else
-    {
-        return a < b;
     }
 }

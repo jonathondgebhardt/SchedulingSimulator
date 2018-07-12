@@ -19,10 +19,10 @@
 class FCFS : public Scheduler
 {
 public:
-	// Member functions
 	FCFS();
 	FCFS(const std::vector<Process> processes);
 	~FCFS();
+	
 	std::vector<Process> run();
 };
 
