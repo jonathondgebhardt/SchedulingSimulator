@@ -42,7 +42,7 @@ std::vector<Process> RR::run()
 	{
         updateReadyQueue();
 
-		Process p = ready->front();
+		    Process p = ready->front();
         ready->pop();	
 		
         // Double checks that if a process happens to be pushed back while also being
@@ -79,7 +79,7 @@ std::vector<Process> RR::run()
         if(p.remainingBurstTime > quantum)
         {
             time += quantum;
-	        p.pushBackTime = time;
+	          p.pushBackTime = time;
             p.remainingBurstTime -= quantum;
             ready->push(p);
 
