@@ -41,15 +41,29 @@ Scheduler::Scheduler(const std::vector<Process> processes, int quantum)
     }
 }
 
-// TODO: Implement destructor
 Scheduler::~Scheduler()
 {
-    // for(int i = 0; i < q->size(); ++i)
-    // {
-    //     q->pop();
-    // }
+    while(ready->empty() == false)
+    {
+        ready->pop();
+    }
 
-    // delete q;
+    while(incoming->empty() == false)
+    {
+        incoming->pop();
+    }
+
+    auto pos = terminated->begin();
+    const auto end = terminated->end();
+
+    for(; pos != end; ++pos)
+    {
+        terminated->erase(pos);
+    }
+
+    delete ready;
+    delete incoming;
+    delete terminated;
 }
 
 /// Use the incoming queue to populate the ready queue.

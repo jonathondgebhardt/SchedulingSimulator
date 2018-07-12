@@ -27,18 +27,15 @@ RR::RR(const std::vector<Process> processes, int quantum)
 {
 }
 
-// TODO: Implement destructor
 RR::~RR()
 {
-    // for(int i = 0; i < q->size(); ++i)
-    // {
-    //     q->pop();
-    // }
-
-    // delete q;
 }
 
-/// Serve all processes to completion.
+/// Use Round Robin algorithm (RR) to serve all process to
+/// completion. RR is a quantum preemptive scheduler that allows a
+/// process to execute for a specified amount of time. Once that 
+/// time expires, preempt the current process by putting it at
+/// the end of the queue.
 std::vector<Process> RR::run()
 {
 	while(incoming->empty() == false || ready->empty() == false)

@@ -15,18 +15,16 @@ MLFQ::MLFQ(const std::vector<Process> processes)
     f = new FCFS();
 }
 
-// TODO: Implement destructor
 MLFQ::~MLFQ()
 {
-    // for(int i = 0; i < q->size(); ++i)
-    // {
-    //     q->pop();
-    // }
-
-    // delete q;
 }
 
-/// Serve all processes to completion using priority levels and aging.
+/// Use Multi Level Feedback Queue algorithm (MLFQ) to serve
+/// all processes to completion. MLFQ is a tiered scheduling 
+/// algorithm that utilizes priority and aging. Processes in 
+/// queue 0 and queue 1 are served in Round Robin (RR) and 
+/// processes in queue 2 are served in First Come First Serve 
+/// (FCFS).
 std::vector<Process> MLFQ::run()
 {
     Process currentProcess = incoming->top();
@@ -167,11 +165,13 @@ Process MLFQ::getNextProcess(int window)
         nextProcess = rr1->ready->front();
         rr1->ready->pop();
     }
+
     else if(rr2->ready->empty() == false)
     {
         nextProcess = rr2->ready->front();
         rr2->ready->pop();
     }
+    
     else if(f->ready->empty() == false)
     {
         nextProcess = f->ready->front();

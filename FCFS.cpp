@@ -16,15 +16,8 @@ FCFS::FCFS(const std::vector<Process> processes)
 {
 }
 
-// TODO: Implement destructor
 FCFS::~FCFS()
 {
-    // for(int i = 0; i < q->size(); ++i)
-    // {
-    //     q->pop();
-    // }
-
-    // delete q;
 }
 
 /// Use First Come First Serve algorithm (FCFS) to serve all 
