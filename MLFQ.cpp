@@ -140,6 +140,12 @@ std::vector<Process> MLFQ::run()
         if(nextProcess.pid != -1)
         {
             currentProcess = nextProcess;
+
+	    // Updates time to account for break between processes if one exists
+	    if(nextProcess.arrivalTime > time)
+	    {
+		    time = nextProcess.arrivalTime;
+	    }
         }
     }
 
@@ -157,6 +163,13 @@ Process MLFQ::getNextProcess(int window)
     {
         nextProcess = incoming->top();
         incoming->pop();
+    }
+
+    // Handles if a process is entered after a break between processes
+    else if(!incoming->empty() && rr1->ready->empty() && incoming->top().remainingBurstTime == incoming->top().burstTime && rr2->ready->empty() && f->ready->empty())
+    {
+	    nextProcess = incoming->top();
+	    incoming->pop();
     }
 
     // Otherwise, grab the next priority level process.
