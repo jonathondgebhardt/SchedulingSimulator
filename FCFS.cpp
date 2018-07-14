@@ -28,6 +28,14 @@ std::vector<Process> FCFS::run()
 	while(incoming->empty() == false || ready->empty() == false)
 	{
 		updateReadyQueue();
+		
+		// If a process enters after a short break between processes, we need to 
+		// update the time in order for it to be pushed to the ready queue appropriately
+		if(!incoming->empty() && ready->empty() && incoming->top().arrivalTime > 0)
+		{
+			time = incoming->top().arrivalTime;
+			continue;
+		}
 
 		Process p = ready->front();
 		ready->pop();
