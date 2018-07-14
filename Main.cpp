@@ -196,12 +196,12 @@ double getAverageTurnaroundTime(const std::vector<Process>& servedProcesses)
 void printReport(const std::vector<Process>& servedProcesses)
 {
 	double avgWaitTime = getAverageWaitingTime(servedProcesses);
-	double avgReponseTime = getAverageResponseTime(servedProcesses);
+	double avgResponseTime = getAverageResponseTime(servedProcesses);
 	double avgTurnaroundTime = getAverageTurnaroundTime(servedProcesses);
 
 	std::cout << "=========================================\n";
-	std::cout << "Average waiting time: " << avgWaitTime << "\n";
-	std::cout << "Average reponse time: " << avgReponseTime << "\n";
-	std::cout << "Average turnaround time: " << avgTurnaroundTime << "\n";
+	std::printf("Average waiting time: %.3f\n", avgWaitTime);
+	std::printf("Average response time: %.3f\n", avgResponseTime);
+	std::printf("Average turnaround time: %.3f\n", avgTurnaroundTime);
 	std::cout << "=========================================\n";
 }

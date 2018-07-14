@@ -54,6 +54,10 @@ std::vector<Process> MLFQ::run()
         // Case 1: Current process is a new arrival
         if(currentProcess.isNewArrival() == true)
         {
+            // Find the amount of time for the first period of waiting.
+            currentProcess.timeServed = time;  
+            currentProcess.waitTime = time - currentProcess.arrivalTime;
+
             // Case 1a: Served full quantum -> demoted
             if(currentProcess.remainingBurstTime > quantum)
             {
@@ -69,6 +73,7 @@ std::vector<Process> MLFQ::run()
             {
                 time += currentProcess.remainingBurstTime;
                 currentProcess.remainingBurstTime = 0;
+                currentProcess.completionTime = time;
                 terminated->push_back(currentProcess);
 
                 std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
@@ -79,6 +84,7 @@ std::vector<Process> MLFQ::run()
         // Case 2: Next Process is a new arrival
         else if(nextProcess.pid != -1 && nextProcess.isNewArrival() == true)
         {
+            currentProcess.waitTime += time - currentProcess.pushBackTime;
             int delta = nextProcess.arrivalTime - time;
 
             // Case 2a: Current process doesn't get full quantum -> prempt
@@ -95,6 +101,7 @@ std::vector<Process> MLFQ::run()
             else if(currentProcess.remainingBurstTime > quantum)
             {
                 time += quantum;
+                currentProcess.pushBackTime = time;
                 currentProcess.remainingBurstTime -= quantum;
                 demote(&currentProcess);
 
@@ -106,6 +113,7 @@ std::vector<Process> MLFQ::run()
             {
                 time += currentProcess.remainingBurstTime;
                 currentProcess.remainingBurstTime = 0;
+                currentProcess.completionTime = time;
                 terminated->push_back(currentProcess);
 
                 std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
@@ -130,6 +138,7 @@ std::vector<Process> MLFQ::run()
             {
                 time += currentProcess.remainingBurstTime;
                 currentProcess.remainingBurstTime = 0;
+                currentProcess.completionTime = time;
                 terminated->push_back(currentProcess);
 
                 std::printf("PID %5d has finished at %5d\n", currentProcess.pid, time);
