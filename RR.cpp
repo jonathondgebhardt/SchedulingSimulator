@@ -53,7 +53,26 @@ std::vector<Process> RR::run()
 		}
 
 		Process p = ready->front();
-        	ready->pop();	
+        	ready->pop();
+		Process temp = ready->front();
+
+		// Checks that the ready queue is not out of order if new processes have arrived
+		// while other processes that were preempted were running. Fixes it if it is.
+		if(temp.remainingBurstTime == temp.burstTime && p.pushBackTime > temp.arrivalTime && temp.burstTime != 0)
+		{
+			ready->push(p);
+			p = temp;
+			ready->pop();
+		}
+
+		// Checks that the queue is not out of order of the order for preempted processes.
+		// Fixes it if it is.
+		if(p.pushBackTime > temp.pushBackTime && temp.pushBackTime != 0)
+		{
+			ready->push(p);
+			p = temp;
+			ready->pop();
+		}		
 		
         	// Check to make sure that if a process executes is not pushed back to the top
 		// of the queue when it shouldn't be -- keeps the first process from reentering
