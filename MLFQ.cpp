@@ -62,6 +62,7 @@ std::vector<Process> MLFQ::run()
             if(currentProcess.remainingBurstTime > quantum)
             {
                 time += quantum;
+		currentProcess.pushBackTime = time;
                 currentProcess.remainingBurstTime -= quantum;
                 demote(&currentProcess);
 
@@ -91,6 +92,7 @@ std::vector<Process> MLFQ::run()
             if(delta < quantum)
             {
                 time += delta;
+		currentProcess.pushBackTime = time;
                 currentProcess.remainingBurstTime -= delta;
                 preempt(&currentProcess);
 
@@ -123,10 +125,14 @@ std::vector<Process> MLFQ::run()
         // Case 3: Neither process is new
         else
         {
+	    
+	    currentProcess.waitTime += time - currentProcess.pushBackTime;
+
             // Case 3a: Not enough time to finish -> demote
             if(currentProcess.remainingBurstTime > quantum)
             {
                 time += quantum;
+		currentProcess.pushBackTime = time;
                 currentProcess.remainingBurstTime -= quantum;
                 demote(&currentProcess);
 
